@@ -57,10 +57,12 @@ namespace macros {
             dpp::embed embed = dpp::embed().set_description(macros[message]).set_color(dpp::colors::red_fox);
             dpp::message msg(event.msg.channel_id, embed);
 
-            if (!event.msg.message_reference.message_id.empty())
+            if (!event.msg.message_reference.message_id.empty()) {
                 msg.set_reference(event.msg.message_reference.message_id);
-
-            event.send(msg);
+                event.send(msg);
+            } else {
+                event.reply(msg);
+            }
         }
     }
 
