@@ -4,7 +4,7 @@
 #include <dpp/dpp.h>
 #include <toml.hpp>
 
-constexpr std::string boolToCheckbox(bool value) {
+std::string boolToCheckbox(bool value) {
     return value ? "☑" : "☐";
 }
 
