@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.18)
+project(Panda3DSBot)
+
+set(CMAKE_CXX_STANDARD 20)
+set(DPP_BUILD_TEST OFF)
+set(DPP_INSTALL OFF)
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_VOICE_SUPPORT OFF)
+add_subdirectory(third_party/DPP)
+add_subdirectory(third_party/toml11)
+
+add_executable(Panda3DSBot main.cpp commands.cpp admin.cpp macros.cpp)
+target_include_directories(Panda3DSBot PRIVATE third_party/DPP/include third_party/toml11)
+target_link_libraries(Panda3DSBot dpp)

@@ -1,0 +1,6 @@
+[submodule "third_party/DPP"]
+	path = third_party/DPP
+	url = https://github.com/brainboxdotcc/DPP
+[submodule "third_party/toml11"]
+	path = third_party/toml11
+	url = https://github.com/ToruNiina/toml11
