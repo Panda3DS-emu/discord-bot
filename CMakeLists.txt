@@ -9,6 +9,6 @@ set(BUILD_VOICE_SUPPORT OFF)
 add_subdirectory(third_party/DPP)
 add_subdirectory(third_party/toml11)
 
-add_executable(Panda3DSBot main.cpp commands.cpp admin.cpp macros.cpp)
+add_executable(Panda3DSBot src/main.cpp src/commands.cpp src/admin.cpp src/macros.cpp)
 target_include_directories(Panda3DSBot PRIVATE third_party/DPP/include third_party/toml11)
 target_link_libraries(Panda3DSBot dpp)
