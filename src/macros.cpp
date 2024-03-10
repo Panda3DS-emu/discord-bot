@@ -1,6 +1,7 @@
 #include "macros.hpp"
 #include "colors.h"
 #include <unordered_map>
+#include <filesystem>
 
 namespace macros {
 
@@ -17,6 +18,8 @@ namespace macros {
     }
 
     void Initialize() {
+        std::filesystem::create_directory("macro_files");
+
         std::ifstream macrosFile("macros.txt");
         if (macrosFile.is_open()) {
             int lines = std::count(std::istreambuf_iterator<char>(macrosFile), std::istreambuf_iterator<char>(), '\n');

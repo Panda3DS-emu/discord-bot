@@ -108,7 +108,7 @@ namespace commands {
         std::string name = std::get<std::string>(event.get_parameter("name"));
         dpp::snowflake fileId = std::get<dpp::snowflake>(event.get_parameter("file"));
         dpp::attachment att = event.command.get_resolved_attachment(fileId);
-        bot.request(att.url, dpp::http_method::m_get, [event, name](const dpp::http_request_completion_t& completion) {
+        bot.request(att.url, dpp::http_method::m_get, [event, name, att](const dpp::http_request_completion_t& completion) {
             if (completion.status != 200) {
                 event.reply(dpp::message("Failed to download file").set_flags(dpp::m_ephemeral));
                 return;
@@ -119,11 +119,11 @@ namespace commands {
                 return;
             }
 
-            std::ofstream file("macro_files/" + name);
+            std::ofstream file("macro_files/" + att.filename);
             file.write(completion.body.data(), completion.body.size());
             file.close();
 
-            bool added = macros::AddMacro(name, "macro_files/" + name);
+            bool added = macros::AddMacro(name, "macro_files/" + att.filename);
             event.reply(dpp::message(added ? "Macro added" : "Macro already exists").set_flags(dpp::m_ephemeral));
         });
     }
