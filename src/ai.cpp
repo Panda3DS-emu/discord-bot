@@ -42,7 +42,7 @@ namespace artificial {
         promptFile.close();
 
         convo.AddUserData("Hello AI. Your prompt is: " + data);
-        convo.AddUserData("Stay in character after this line. You will be conversated with. The non-AI messages will be prepended with \'HUMAN:\'");
+        convo.AddUserData("Follow it after this line.");
         convo.AddUserData("---");
 
         std::ifstream funnyPromptFile("ai_funny_prompt.txt");
@@ -53,7 +53,7 @@ namespace artificial {
         funnyPromptFile.read(&funnyData[0], funnyData.size());
         funnyPromptFile.close();
         convoFunny.AddUserData("Hello AI. Your prompt is: " + data);
-        convoFunny.AddUserData("Stay in character after this line. You will be conversated with. The non-AI messages will be prepended with \'HUMAN:\'");
+        convoFunny.AddUserData("Follow it after this line.");
         convoFunny.AddUserData("---");
 
         initialized = true;
