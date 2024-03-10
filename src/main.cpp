@@ -48,6 +48,8 @@ int main() {
             commands::SolvePuzzle(bot, event);
         } else if (name == "current_puzzle") {
             commands::CurrentPuzzle(bot, event);
+        } else if (name == "panda") {
+            commands::Panda(bot, event);
         }
     });
 
@@ -109,6 +111,8 @@ int main() {
 
             dpp::slashcommand currentPuzzleCommand("current_puzzle", "Show the current puzzle", bot.me.id);
 
+            dpp::slashcommand pandaCommand("panda", "Show an artifical panda!", bot.me.id);
+
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
             bot.global_command_create(removeAdminCommand);
@@ -120,6 +124,7 @@ int main() {
             bot.global_command_create(startPuzzleCommand);
             bot.global_command_create(solvePuzzleCommand);
             bot.global_command_create(currentPuzzleCommand);
+            bot.global_command_create(pandaCommand);
         }
     });
 

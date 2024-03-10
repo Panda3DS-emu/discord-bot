@@ -16,4 +16,5 @@ namespace commands {
     void StartPuzzle(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void SolvePuzzle(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void CurrentPuzzle(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void Panda(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }

@@ -1,8 +1,8 @@
 #include "commands.hpp"
 #include "admin.hpp"
 #include "macros.hpp"
-#include <dpp/dpp.h>
 #include <toml.hpp>
+#include "ai.hpp"
 
 std::string boolToCheckbox(bool value) {
     return value ? "☑" : "☐";
@@ -193,6 +193,10 @@ namespace commands {
             .set_description("The first person to solve the puzzle wins the <@&1216474451282235402> role! The puzzle description is: " + currentPuzzleDescription)
             .add_field("Good luck!", "Use /solve_puzzle to solve the puzzle. The solution is a single word.");
         event.reply(dpp::message(event.command.channel_id, embed));
+    }
+
+    void Panda(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        artificial::GenerateImage(event, "A cute red panda!");
     }
 
 }
