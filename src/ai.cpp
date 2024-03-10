@@ -43,7 +43,7 @@ namespace artificial {
         promptFile.read(&data[0], data.size());
         promptFile.close();
 
-        convo.AddUserData("Hello AI. Your prompt is: " + data);
+        convo.AddUserData("Your prompt is: " + data);
         convo.AddUserData("Follow it after this line.");
         convo.AddUserData("---");
 
@@ -54,7 +54,7 @@ namespace artificial {
         funnyPromptFile.seekg(0, std::ios::beg);
         funnyPromptFile.read(&funnyData[0], funnyData.size());
         funnyPromptFile.close();
-        convoFunny.AddUserData("Hello AI. Your prompt is: " + funnyData);
+        convoFunny.AddUserData("Your prompt is: " + funnyData);
         convoFunny.AddUserData("Follow it after this line.");
         convoFunny.AddUserData("---");
 
@@ -112,7 +112,7 @@ namespace artificial {
         convo.AddUserData("HUMAN: " + prompt);
         std::thread t([event, prompt] {
             std::lock_guard<std::mutex> lock(mutex);
-            if (rand() % 5 == 0) {
+            if (rand() % 20 == 0) {
                 liboai::Response response = oai.ChatCompletion->create(
                     "gpt-3.5-turbo", convoFunny
                 );
