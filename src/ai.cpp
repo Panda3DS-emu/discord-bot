@@ -41,12 +41,12 @@ namespace artificial {
 
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         if (timestamp - lastImageTimestamp < 7200) {
-            event.reply(dpp::message("You can only generate an image every 2 hours, or else Paris is going to go bankrupt. Next image available at <t:" + std::to_string(lastImageTimestamp + 7200) + "R>").set_flags(dpp::m_ephemeral));
+            event.reply(dpp::message("You can only generate an image every 2 hours, or else Paris is going to go bankrupt. Next image available <t:" + std::to_string(lastImageTimestamp + 7200) + ":R>"));
             return;
         }
 
         lastImageTimestamp = timestamp;
-        event.thinking(true, [event, prompt](const dpp::confirmation_callback_t& callback) {
+        event.thinking(false, [event, prompt](const dpp::confirmation_callback_t& callback) {
             std::thread t([event, prompt] {
                 liboai::Response res = oai.Image->create(
                     prompt,
@@ -57,7 +57,7 @@ namespace artificial {
                 std::string url = res["data"][0]["url"];
                 dpp::embed embed = dpp::embed()
                     .set_image(url)
-                    .set_title("Your panda is ready!");
+                    .set_title("Your artificial panda is ready!");
                 event.edit_original_response(dpp::message(event.command.channel_id, embed));
             });
             t.detach();
