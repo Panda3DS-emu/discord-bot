@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(Panda3DSBot)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 20)
 set(DPP_BUILD_TEST OFF)
 set(DPP_INSTALL OFF)

@@ -5,6 +5,7 @@
 namespace macros {
 
     std::unordered_map<std::string, std::string> macros;
+    std::unordered_map<std::filesystem::path, std::string> macroFiles;
 
     void saveMacros() {
         std::ofstream macrosFile("macros.txt");
@@ -54,7 +55,29 @@ namespace macros {
         std::string message = event.msg.content;
         auto id = event.msg.message_reference.message_id;
         if (macros.find(message) != macros.end()) {
-            dpp::embed embed = dpp::embed().set_description(macros[message]).set_color(dpp::colors::red_fox);
+            const std::string& content = macros[message];
+
+            // File macro
+            if (strncmp(content.c_str(), "macro_files/", 12) == 0) {
+                std::filesystem::path path = content;
+                dpp::message msg(event.msg.channel_id, "");
+
+                if (macroFiles.find(path) == macroFiles.end()) {
+                    macroFiles[path] = dpp::utility::read_file(path);
+                }
+                msg.add_file(path.filename().string(), macroFiles[path]);
+
+                if (!id.empty()) {
+                    msg.set_reference(id);
+                    event.send(msg);
+                } else {
+                    event.reply(msg);
+                }
+                return;
+            }
+
+            // Normal message macro
+            dpp::embed embed = dpp::embed().set_description(content).set_color(dpp::colors::red_fox);
             dpp::message msg(event.msg.channel_id, embed);
 
             if (!event.msg.message_reference.message_id.empty()) {

@@ -9,6 +9,7 @@ namespace commands {
     void AddAdmin(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void RemoveAdmin(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void AddMacro(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void AddMacroFile(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void RemoveMacro(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Download(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }

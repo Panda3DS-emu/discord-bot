@@ -35,6 +35,8 @@ int main() {
             admins::AdminCommand(commands::RemoveMacro, bot, event);
         } else if (event.command.get_command_name() == "download") {
             commands::Download(bot, event);
+        } else if (event.command.get_command_name() == "add_macro_file") {
+            admins::AdminCommand(commands::AddMacroFile, bot, event);
         }
     });
 
@@ -66,6 +68,13 @@ int main() {
                 dpp::command_option(dpp::co_string, "response", "The response of the macro", true)
             );
 
+            dpp::slashcommand addMacroFileCommand("add_macro_file", "Add a macro that responds with a file to the list of macros", bot.me.id);
+            addMacroFileCommand.add_option(
+                dpp::command_option(dpp::co_string, "name", "The name of the macro", true)
+            ).add_option(
+                dpp::command_option(dpp::co_attachment, "file", "The file to respond with", true)
+            );
+
             dpp::slashcommand removeMacroCommand("remove_macro", "Remove a macro from the list of macros", bot.me.id);
             removeMacroCommand.add_option(
                 dpp::command_option(dpp::co_string, "name", "The name of the macro", true)
@@ -77,6 +86,7 @@ int main() {
             bot.global_command_create(addAdminCommand);
             bot.global_command_create(removeAdminCommand);
             bot.global_command_create(addMacroCommand);
+            bot.global_command_create(addMacroFileCommand);
             bot.global_command_create(removeMacroCommand);
             bot.global_command_create(downloadCommand);
         }
