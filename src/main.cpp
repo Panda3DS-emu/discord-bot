@@ -42,7 +42,7 @@ int main() {
         } else if (event.command.get_command_name() == "start_puzzle") {
             admins::AdminCommand(commands::StartPuzzle, bot, event);
         } else if (event.command.get_command_name() == "solve_puzzle") {
-            admins::AdminCommand(commands::SolvePuzzle, bot, event);
+            commands::SolvePuzzle(bot, event);
         }
     });
 
