@@ -109,19 +109,19 @@ namespace artificial {
         }
 
         lastQuestionTimestamp = timestamp;
-        convo.AddUserData(prompt);
+        convo.AddUserData("HUMAN: " + prompt);
         std::thread t([event, prompt] {
             std::lock_guard<std::mutex> lock(mutex);
             if (rand() % 20 == 0) {
                 liboai::Response response = oai.ChatCompletion->create(
                     "gpt-3.5-turbo", convoFunny
                 );
-                convoFunny.Update(response);
                 event.reply(dpp::message(convoFunny.GetLastResponse()));
             } else {
                 liboai::Response response = oai.ChatCompletion->create(
                     "gpt-3.5-turbo", convo
                 );
+                response.content =  response.content;
                 convo.Update(response);
                 event.reply(dpp::message(convo.GetLastResponse()));
             }
