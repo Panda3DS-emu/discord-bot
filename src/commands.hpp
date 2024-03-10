@@ -13,4 +13,6 @@ namespace commands {
     void RemoveMacro(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Download(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void ClearCache(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void StartPuzzle(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void SolvePuzzle(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }

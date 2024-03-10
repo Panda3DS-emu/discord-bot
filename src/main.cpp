@@ -39,6 +39,10 @@ int main() {
             admins::AdminCommand(commands::AddMacroFile, bot, event);
         } else if (event.command.get_command_name() == "clear_cache") {
             admins::AdminCommand(commands::ClearCache, bot, event);
+        } else if (event.command.get_command_name() == "start_puzzle") {
+            admins::AdminCommand(commands::StartPuzzle, bot, event);
+        } else if (event.command.get_command_name() == "solve_puzzle") {
+            admins::AdminCommand(commands::SolvePuzzle, bot, event);
         }
     });
 
@@ -86,6 +90,18 @@ int main() {
 
             dpp::slashcommand clearCacheCommand("clear_cache", "Clear the image cache", bot.me.id);
 
+            dpp::slashcommand startPuzzleCommand("start_puzzle", "Start a puzzle", bot.me.id);
+            startPuzzleCommand.add_option(
+                dpp::command_option(dpp::co_string, "description", "The description of the puzzle", true)
+            ).add_option(
+                dpp::command_option(dpp::co_string, "solution", "The solution of the puzzle", true)
+            );
+
+            dpp::slashcommand puzzleCommand("solve_puzzle", "Solve a puzzle", bot.me.id);
+            puzzleCommand.add_option(
+                dpp::command_option(dpp::co_string, "solution", "The solution of the puzzle", true)
+            );
+
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
             bot.global_command_create(removeAdminCommand);
@@ -94,6 +110,8 @@ int main() {
             bot.global_command_create(removeMacroCommand);
             bot.global_command_create(downloadCommand);
             bot.global_command_create(clearCacheCommand);
+            bot.global_command_create(startPuzzleCommand);
+            bot.global_command_create(puzzleCommand);
         }
     });
 

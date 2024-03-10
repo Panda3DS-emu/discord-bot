@@ -17,6 +17,8 @@ unsigned constexpr str_hash(char const *input) {
         5381;
 }
 
+std::string currentPuzzleSolution;
+
 namespace commands {
 
     void Settings(dpp::cluster& bot, const dpp::slashcommand_t& event) {
@@ -146,6 +148,31 @@ namespace commands {
     void ClearCache(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         macros::ClearCache();
         event.reply(dpp::message("Cache cleared").set_flags(dpp::m_ephemeral));
+    }
+
+    void StartPuzzle(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        currentPuzzleSolution = std::get<std::string>(event.get_parameter("solution"));
+        dpp::embed embed = dpp::embed()
+            .set_color(dpp::colors::sti_blue)
+            .set_author(event.command.get_issuing_user().global_name + " has started a puzzle!", "", event.command.get_issuing_user().get_avatar_url())
+            .set_thumbnail("https://panda3ds.com/images/panda-icon.png")
+            .set_description("The first person to solve the puzzle wins the <@&1216474451282235402> role! The puzzle description is: " + std::get<std::string>(event.get_parameter("description")));
+        event.reply(dpp::message(event.command.channel_id, embed));
+    }
+
+    void SolvePuzzle(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        if (currentPuzzleSolution.empty()) {
+            event.reply(dpp::message("No puzzle is currently active").set_flags(dpp::m_ephemeral));
+            return;
+        }
+
+        if (std::get<std::string>(event.get_parameter("solution")) == currentPuzzleSolution) {
+            bot.guild_member_add_role(event.command.guild_id, event.command.get_issuing_user().id, 1216474451282235402);
+            event.reply(dpp::message("Congratulations! You've solved the puzzle and won the <@&1216474451282235402> role! The solution was: " + currentPuzzleSolution));
+            currentPuzzleSolution.clear();
+        } else {
+            event.reply(dpp::message("Incorrect solution").set_flags(dpp::m_ephemeral));
+        }
     }
 
 }
