@@ -5,6 +5,7 @@
 #include <iostream>
 #include <functional>
 #include <dpp/dpp.h>
+#include <mutex>
 
 liboai::OpenAI oai;
 bool initialized;
@@ -12,6 +13,7 @@ uint64_t lastImageTimestamp = 0;
 uint64_t lastQuestionTimestamp = 0;
 liboai::Conversation convo;
 liboai::Conversation convoFunny;
+std::mutex mutex;
 
 namespace artificial {
     
@@ -52,7 +54,7 @@ namespace artificial {
         funnyPromptFile.seekg(0, std::ios::beg);
         funnyPromptFile.read(&funnyData[0], funnyData.size());
         funnyPromptFile.close();
-        convoFunny.AddUserData("Hello AI. Your prompt is: " + data);
+        convoFunny.AddUserData("Hello AI. Your prompt is: " + funnyData);
         convoFunny.AddUserData("Follow it after this line.");
         convoFunny.AddUserData("---");
 
@@ -109,9 +111,10 @@ namespace artificial {
         lastQuestionTimestamp = timestamp;
         convo.AddUserData("HUMAN: " + prompt);
         std::thread t([event, prompt] {
+            std::lock_guard<std::mutex> lock(mutex);
             if (rand() % 5 == 0) {
                 liboai::Response response = oai.ChatCompletion->create(
-                    "gpt-4", convoFunny
+                    "gpt-3.5-turbo", convoFunny
                 );
                 convoFunny.Update(response);
                 event.reply(dpp::message(convoFunny.GetLastResponse()));
