@@ -2,12 +2,14 @@
 #include "admin.hpp"
 #include "commands.hpp"
 #include "macros.hpp"
+#include "ai.hpp"
 
 constexpr bool clearCommands = false;
 
 int main() {
     admins::Initialize();
     macros::Initialize();
+    artificial::Initialize();
 
     std::string token;
     std::ifstream tokenFile("token.txt");
