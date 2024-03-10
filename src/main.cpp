@@ -23,26 +23,29 @@ int main() {
     bot.on_log(dpp::utility::cout_logger());
 
     bot.on_slashcommand([&bot](const dpp::slashcommand_t& event) {
-        if (event.command.get_command_name() == "settings") {
+        std::string name = event.command.get_command_name();
+        if (name == "settings") {
             commands::Settings(bot, event);
-        } else if (event.command.get_command_name() == "add_admin") {
+        } else if (name == "add_admin") {
             admins::AdminCommand(commands::AddAdmin, bot, event);
-        } else if (event.command.get_command_name() == "remove_admin") {
+        } else if (name == "remove_admin") {
             admins::AdminCommand(commands::RemoveAdmin, bot, event);
-        } else if (event.command.get_command_name() == "add_macro") {
+        } else if (name == "add_macro") {
             admins::AdminCommand(commands::AddMacro, bot, event);
-        } else if (event.command.get_command_name() == "remove_macro") {
+        } else if (name == "remove_macro") {
             admins::AdminCommand(commands::RemoveMacro, bot, event);
-        } else if (event.command.get_command_name() == "download") {
+        } else if (name == "download") {
             commands::Download(bot, event);
-        } else if (event.command.get_command_name() == "add_macro_file") {
+        } else if (name == "add_macro_file") {
             admins::AdminCommand(commands::AddMacroFile, bot, event);
-        } else if (event.command.get_command_name() == "clear_cache") {
+        } else if (name == "clear_cache") {
             admins::AdminCommand(commands::ClearCache, bot, event);
-        } else if (event.command.get_command_name() == "start_puzzle") {
+        } else if (name == "start_puzzle") {
             admins::AdminCommand(commands::StartPuzzle, bot, event);
-        } else if (event.command.get_command_name() == "solve_puzzle") {
+        } else if (name == "solve_puzzle") {
             commands::SolvePuzzle(bot, event);
+        } else if (name == "current_puzzle") {
+            commands::CurrentPuzzle(bot, event);
         }
     });
 
@@ -102,6 +105,8 @@ int main() {
                 dpp::command_option(dpp::co_string, "solution", "The solution of the puzzle", true)
             );
 
+            dpp::slashcommand currentPuzzleCommand("current_puzzle", "Show the current puzzle", bot.me.id);
+
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
             bot.global_command_create(removeAdminCommand);
@@ -112,6 +117,7 @@ int main() {
             bot.global_command_create(clearCacheCommand);
             bot.global_command_create(startPuzzleCommand);
             bot.global_command_create(solvePuzzleCommand);
+            bot.global_command_create(currentPuzzleCommand);
         }
     });
 

@@ -17,6 +17,7 @@ unsigned constexpr str_hash(char const *input) {
         5381;
 }
 
+std::string currentPuzzleDescription;
 std::string currentPuzzleSolution;
 
 namespace commands {
@@ -159,13 +160,8 @@ namespace commands {
             return;
         }
 
-        dpp::embed embed = dpp::embed()
-            .set_color(dpp::colors::sti_blue)
-            .set_author(event.command.get_issuing_user().global_name + " has started a puzzle!", "", event.command.get_issuing_user().get_avatar_url())
-            .set_thumbnail("https://panda3ds.com/images/panda-icon.png")
-            .set_description("The first person to solve the puzzle wins the <@&1216474451282235402> role! The puzzle description is: " + std::get<std::string>(event.get_parameter("description")))
-            .add_field("Good luck!", "Use /solve_puzzle to solve the puzzle. The solution is a single word.");
-        event.reply(dpp::message(event.command.channel_id, embed));
+        currentPuzzleDescription = std::get<std::string>(event.get_parameter("description"));
+        CurrentPuzzle(bot, event);
     }
 
     void SolvePuzzle(dpp::cluster &bot, const dpp::slashcommand_t &event) {
@@ -178,9 +174,25 @@ namespace commands {
             bot.guild_member_add_role(event.command.guild_id, event.command.get_issuing_user().id, 1216474451282235402);
             event.reply(dpp::message("Congratulations! You've solved the puzzle and won the <@&1216474451282235402> role! The solution was: " + currentPuzzleSolution));
             currentPuzzleSolution.clear();
+            currentPuzzleDescription.clear();
         } else {
             event.reply(dpp::message("Incorrect solution").set_flags(dpp::m_ephemeral));
         }
+    }
+
+    void CurrentPuzzle(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        if (currentPuzzleSolution.empty() && currentPuzzleDescription.empty()) {
+            event.reply(dpp::message("No puzzle is currently active").set_flags(dpp::m_ephemeral));
+            return;
+        }
+
+        dpp::embed embed = dpp::embed()
+            .set_color(dpp::colors::sti_blue)
+            .set_author(event.command.get_issuing_user().global_name + " has started a puzzle!", "", event.command.get_issuing_user().get_avatar_url())
+            .set_thumbnail("https://panda3ds.com/images/panda-icon.png")
+            .set_description("The first person to solve the puzzle wins the <@&1216474451282235402> role! The puzzle description is: " + currentPuzzleDescription)
+            .add_field("Good luck!", "Use /solve_puzzle to solve the puzzle. The solution is a single word.");
+        event.reply(dpp::message(event.command.channel_id, embed));
     }
 
 }
