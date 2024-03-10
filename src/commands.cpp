@@ -3,9 +3,10 @@
 #include "macros.hpp"
 #include <dpp/dpp.h>
 #include <toml.hpp>
+#include <cpprest/http_client.h>
 
 std::string boolToCheckbox(bool value) {
-    return value ? "☑" : "☐";
+    return value ? "☑" : "☒";
 }
 
 unsigned constexpr str_hash(char const *input) {
@@ -137,11 +138,48 @@ namespace commands {
     void Download(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         dpp::embed embed = dpp::embed()
             .set_color(dpp::colors::sti_blue)
-            .set_author("Download", "", "https://panda3ds.com/images/panda-icon.png")
+            .set_author("Latest Panda 3ds Release Build", "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png")
             .set_thumbnail("https://panda3ds.com/images/panda-icon.png")
-            .set_description("Download the latest version of Panda3DS [here](https://panda3ds.com/download.html)");
+        try {
+        // Create an HTTP client
+        web::http::client::http_client client(U("https://api.github.com"));
+
+        // Make a GET request to fetch the latest release information
+        web::http::http_request request(web::http::methods::GET);
+        request.set_request_uri(U("/repos/wheremyfoodat/Panda3DS/releases/latest"));
+        
+        // Send the request asynchronously
+        auto response = client.request(request).get();
+        // Check if the response is successful
+        if (response.status_code() == web::http::status_codes::OK) {
+            // Parse the JSON response
+            auto release = response.extract_json().get();
+
+            // Access the release data
+            auto assets = release[U("assets")].as_array();
+            if (assets.empty()) {
+                embed.set_description("No build attached to this release");
+            } else {
+                embed.set_title(release[U("name")].is_null() ? release[U("tag_name")].as_string() : release[U("name")].as_string())
+                     .set_description(release[U("body")].as_string())
+                     .set_url(release[U("html_url")].as_string())
+                     .set_footer(release[U("tag_name")].as_string())
+                     .set_timestamp(std::chrono::system_clock::now());
+
+                embed.add_field("Release Build", "[Download APK](" + assets[0][U("browser_download_url")].as_string() + ")");
+            }
+        } else {
+            // Handle unsuccessful response
+            embed.set_description("No releases found on the repository");
+        }
+
+        // Send the embed message
         event.reply(dpp::message(event.command.channel_id, embed));
+    } catch (const std::exception& e) {
+        // Handle exceptions
+        event.reply(dpp::message(event.command.channel_id, "An error occurred: " + std::string(e.what())));
     }
+}
 
     void ClearCache(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         macros::ClearCache();
