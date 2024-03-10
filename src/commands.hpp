@@ -12,4 +12,5 @@ namespace commands {
     void AddMacroFile(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void RemoveMacro(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Download(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void ClearCache(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }

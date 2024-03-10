@@ -92,4 +92,8 @@ namespace macros {
         }
     }
 
+    void ClearCache() {
+        macroFiles.clear();
+    }
+
 }

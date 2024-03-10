@@ -37,6 +37,8 @@ int main() {
             commands::Download(bot, event);
         } else if (event.command.get_command_name() == "add_macro_file") {
             admins::AdminCommand(commands::AddMacroFile, bot, event);
+        } else if (event.command.get_command_name() == "clear_cache") {
+            admins::AdminCommand(commands::ClearCache, bot, event);
         }
     });
 
@@ -82,6 +84,8 @@ int main() {
 
             dpp::slashcommand downloadCommand("download", "Show download links for Panda3DS", bot.me.id);
 
+            dpp::slashcommand clearCacheCommand("clear_cache", "Clear the image cache", bot.me.id);
+
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
             bot.global_command_create(removeAdminCommand);
@@ -89,6 +93,7 @@ int main() {
             bot.global_command_create(addMacroFileCommand);
             bot.global_command_create(removeMacroCommand);
             bot.global_command_create(downloadCommand);
+            bot.global_command_create(clearCacheCommand);
         }
     });
 

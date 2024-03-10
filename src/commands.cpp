@@ -143,4 +143,9 @@ namespace commands {
         event.reply(dpp::message(event.command.channel_id, embed));
     }
 
+    void ClearCache(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        macros::ClearCache();
+        event.reply(dpp::message("Cache cleared").set_flags(dpp::m_ephemeral));
+    }
+
 }
