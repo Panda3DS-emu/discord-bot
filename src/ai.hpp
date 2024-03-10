@@ -6,4 +6,5 @@
 namespace artificial {
     void Initialize();
     void GenerateImage(const dpp::slashcommand_t& event, const std::string& prompt);
+    void AskQuestion(const dpp::slashcommand_t& event, const std::string& question);
 }

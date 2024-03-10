@@ -1,5 +1,6 @@
 #include <dpp/dpp.h>
 #include "admin.hpp"
+#include "appcommand.h"
 #include "commands.hpp"
 #include "macros.hpp"
 #include "ai.hpp"
@@ -50,6 +51,8 @@ int main() {
             commands::CurrentPuzzle(bot, event);
         } else if (name == "panda") {
             commands::Panda(bot, event);
+        } else if (name == "ask_panda") {
+            commands::AskPanda(bot, event);
         }
     });
 
@@ -111,7 +114,12 @@ int main() {
 
             dpp::slashcommand currentPuzzleCommand("current_puzzle", "Show the current puzzle", bot.me.id);
 
-            dpp::slashcommand pandaCommand("panda", "Show an artifical panda!", bot.me.id);
+            dpp::slashcommand pandaCommand("panda", "Show an artificial panda!", bot.me.id);
+
+            dpp::slashcommand askPandaCommand("ask_panda", "Ask the artificial panda a question!", bot.me.id);
+            askPandaCommand.add_option(
+                dpp::command_option(dpp::co_string, "question", "The question to ask the panda", true)
+            );
 
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
@@ -125,6 +133,7 @@ int main() {
             bot.global_command_create(solvePuzzleCommand);
             bot.global_command_create(currentPuzzleCommand);
             bot.global_command_create(pandaCommand);
+            bot.global_command_create(askPandaCommand);
         }
     });
 

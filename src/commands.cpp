@@ -199,4 +199,8 @@ namespace commands {
         artificial::GenerateImage(event, "A cute red panda!");
     }
 
+    void AskPanda(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        artificial::AskQuestion(event, std::get<std::string>(event.get_parameter("question")));
+    }
+
 }
