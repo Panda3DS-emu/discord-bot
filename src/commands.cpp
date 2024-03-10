@@ -200,8 +200,7 @@ namespace commands {
     }
 
     void AskPanda(dpp::cluster &bot, const dpp::slashcommand_t &event) {
-        std::string author = event.command.get_issuing_user().global_name;
-        artificial::AskQuestion(event, author + ": " + std::get<std::string>(event.get_parameter("question")));
+        event.reply(dpp::message("Just ping me in <#1118695733449723906> to ask your question!").set_flags(dpp::m_ephemeral));
     }
 
 }
