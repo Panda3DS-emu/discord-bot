@@ -97,8 +97,8 @@ int main() {
                 dpp::command_option(dpp::co_string, "solution", "The solution of the puzzle", true)
             );
 
-            dpp::slashcommand puzzleCommand("solve_puzzle", "Solve a puzzle", bot.me.id);
-            puzzleCommand.add_option(
+            dpp::slashcommand solvePuzzleCommand("solve_puzzle", "Solve a puzzle", bot.me.id);
+            solvePuzzleCommand.add_option(
                 dpp::command_option(dpp::co_string, "solution", "The solution of the puzzle", true)
             );
 
@@ -111,7 +111,7 @@ int main() {
             bot.global_command_create(downloadCommand);
             bot.global_command_create(clearCacheCommand);
             bot.global_command_create(startPuzzleCommand);
-            bot.global_command_create(puzzleCommand);
+            bot.global_command_create(solvePuzzleCommand);
         }
     });
 

@@ -152,11 +152,19 @@ namespace commands {
 
     void StartPuzzle(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         currentPuzzleSolution = std::get<std::string>(event.get_parameter("solution"));
+
+        if (currentPuzzleSolution.find(' ') != std::string::npos) {
+            event.reply(dpp::message("Puzzle solution cannot contain spaces, that would be too hard").set_flags(dpp::m_ephemeral));
+            currentPuzzleSolution.clear();
+            return;
+        }
+
         dpp::embed embed = dpp::embed()
             .set_color(dpp::colors::sti_blue)
             .set_author(event.command.get_issuing_user().global_name + " has started a puzzle!", "", event.command.get_issuing_user().get_avatar_url())
             .set_thumbnail("https://panda3ds.com/images/panda-icon.png")
-            .set_description("The first person to solve the puzzle wins the <@&1216474451282235402> role! The puzzle description is: " + std::get<std::string>(event.get_parameter("description")));
+            .set_description("The first person to solve the puzzle wins the <@&1216474451282235402> role! The puzzle description is: " + std::get<std::string>(event.get_parameter("description")))
+            .add_field("Good luck!", "Use /solve_puzzle to solve the puzzle. The solution is a single word.");
         event.reply(dpp::message(event.command.channel_id, embed));
     }
 
