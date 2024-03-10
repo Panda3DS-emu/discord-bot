@@ -200,7 +200,8 @@ namespace commands {
     }
 
     void AskPanda(dpp::cluster &bot, const dpp::slashcommand_t &event) {
-        artificial::AskQuestion(event, std::get<std::string>(event.get_parameter("question")));
+        std::string author = event.command.get_issuing_user().global_name;
+        artificial::AskQuestion(event, author + ": " + std::get<std::string>(event.get_parameter("question")));
     }
 
 }
