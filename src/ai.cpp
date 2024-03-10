@@ -91,8 +91,8 @@ namespace artificial {
         }
 
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        if (timestamp - lastQuestionTimestamp < 60) {
-            event.reply(dpp::message("You can only ask a question every minute, or else Paris is going to go bankrupt. Next question available <t:" + std::to_string(lastQuestionTimestamp + 60) + ":R>"));
+        if (timestamp - lastQuestionTimestamp < 10) {
+            event.reply(dpp::message("You can only ask a question every 10 seconds, or else Paris is going to go bankrupt."));
             return;
         }
 
