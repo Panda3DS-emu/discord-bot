@@ -79,9 +79,8 @@ namespace artificial {
         });
     }
 
-    void AskQuestion(const dpp::slashcommand_t& event, const std::string& prompt) {
-        if (event.command.channel_id != 1118695733449723906) {
-            event.reply(dpp::message("This command is only available in the <#1118695733449723906> channel").set_flags(dpp::m_ephemeral));
+    void AskQuestion(const dpp::message_create_t& event, const std::string& prompt) {
+        if (event.msg.channel_id != 1118695733449723906) {
             return;
         }
 
@@ -91,23 +90,21 @@ namespace artificial {
         }
 
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        if (timestamp - lastQuestionTimestamp < 10) {
-            event.reply(dpp::message("You can only ask a question every 10 seconds, or else Paris is going to go bankrupt."));
+        if (timestamp - lastQuestionTimestamp < 3) {
+            event.reply(dpp::message("You can only ask a question every 3 seconds, or else Paris is going to go bankrupt."));
             return;
         }
 
         lastQuestionTimestamp = timestamp;
         convo.AddUserData("HUMAN: " + prompt);
-        event.thinking(false, [event, prompt](const dpp::confirmation_callback_t& callback) {
-            std::thread t([event, prompt] {
-                liboai::Response response = oai.ChatCompletion->create(
-                    "gpt-3.5-turbo", convo
-                );
-                convo.Update(response);
-                event.edit_original_response(dpp::message(convo.GetLastResponse()));
-            });
-            t.detach();
+        std::thread t([event, prompt] {
+            liboai::Response response = oai.ChatCompletion->create(
+                "gpt-3.5-turbo", convo
+            );
+            convo.Update(response);
+            event.reply(dpp::message(convo.GetLastResponse()));
         });
+        t.detach();
     }
 
 }

@@ -138,7 +138,15 @@ int main() {
     });
 
     bot.on_message_create([&bot](const dpp::message_create_t& event) {
-        macros::CheckForMacro(event);
+        if (event.msg.author.is_bot()) {
+            return;
+        }
+
+        if (event.msg.mentions.size() == 1 && event.msg.mentions[0].first.id == bot.me.id) {
+            artificial::AskQuestion(event, event.msg.author.global_name + ": " + event.msg.content);
+        } else {
+            macros::CheckForMacro(event);
+        }
     });
     
     bot.start(dpp::st_wait);
