@@ -14,6 +14,7 @@ uint64_t lastQuestionTimestamp = 0;
 liboai::Conversation convo;
 liboai::Conversation convoFunny;
 std::mutex mutex;
+int lazyResetPromptCounter = 0;
 
 namespace artificial {
     
@@ -88,7 +89,7 @@ namespace artificial {
     }
 
     void AskQuestion(const dpp::message_create_t& event, const std::string& prompt) {
-        if (event.msg.channel_id != 1118699588140941362) {
+        if (event.msg.channel_id != 1216695684665704479) {
             return;
         }
 
@@ -107,12 +108,18 @@ namespace artificial {
                 }
                 lastQuestionTimestamp = timestamp;
 
-                if (rand() % 10 == 0) {
+                if (rand() % 5 == 0) {
+                    convoFunny.AddUserData("HUMAN: " + prompt + "\n");
                     liboai::Response response = oai.ChatCompletion->create(
                         "gpt-3.5-turbo", convoFunny
                     );
                     event.reply(dpp::message(convoFunny.GetLastResponse()));
                 } else {
+                    lazyResetPromptCounter++;
+                    if (lazyResetPromptCounter > 20) {
+                        convo = liboai::Conversation();
+                        convo.SetSystemData("Your prompt is: " + prompt);
+                    }
                     convo.AddUserData("HUMAN: " + prompt + "\n");
                     liboai::Response response = oai.ChatCompletion->create(
                         "gpt-3.5-turbo", convo
