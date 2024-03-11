@@ -111,7 +111,7 @@ namespace artificial {
                 lastQuestionTimestamp = timestamp;
 
                 srand(time(0));
-                int randomness = rand() % 5;
+                int randomness = rand() % 20;
                 printf("randomness: %d\n", randomness);
                 if (randomness == 0) {
                     convoFunny.AddUserData("HUMAN: " + prompt + "\n");
