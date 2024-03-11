@@ -1,6 +1,7 @@
 #include "commands.hpp"
 #include "admin.hpp"
 #include "macros.hpp"
+#include <string>
 #include <toml.hpp>
 #include "ai.hpp"
 
@@ -19,6 +20,8 @@ unsigned constexpr str_hash(char const *input) {
 
 std::string currentPuzzleDescription;
 std::string currentPuzzleSolution;
+
+std::deque<std::string> history;
 
 namespace commands {
 
@@ -218,6 +221,30 @@ namespace commands {
         std::string message = std::get<std::string>(event.get_parameter("message"));
         bot.message_create(dpp::message(event.command.channel_id, message));
         event.reply(dpp::message("Message sent").set_flags(dpp::m_ephemeral));
+        history.push_back("<@" + std::to_string(event.command.get_issuing_user().id) + "> said in <#" + std::to_string(event.command.channel_id) + ">: " + message);
+        if (history.size() > 10) {
+            history.pop_front();
+        }
+    }
+
+    void History(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        std::string response;
+        for (const std::string& message : history) {
+            response += message + '\n';
+        }
+
+        if (response.empty()) {
+            response = "No messages in history";
+        }
+
+        dpp::embed embed = dpp::embed()
+            .set_color(dpp::colors::sti_blue)
+            .set_author("History", "", "https://panda3ds.com/images/panda-icon.png")
+            .set_thumbnail("https://panda3ds.com/images/panda-icon.png")
+            .set_description(response);
+
+        event.reply(dpp::message(event.command.channel_id, embed));
+
     }
 
 }

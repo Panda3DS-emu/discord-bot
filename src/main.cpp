@@ -59,6 +59,8 @@ int main() {
             admins::AdminCommand(commands::ResetPrompt, bot, event);
         } else if (name == "hidden_say") {
             admins::AdminCommand(commands::HiddenSay, bot, event);
+        } else if (name == "history") {
+            commands::History(bot, event);
         }
     });
 
@@ -139,6 +141,8 @@ int main() {
                 dpp::command_option(dpp::co_string, "message", "The message to say", true)
             );
 
+            dpp::slashcommand historyCommand("history", "Show the hidden_say history of the bot", bot.me.id);
+
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
             bot.global_command_create(removeAdminCommand);
@@ -155,6 +159,7 @@ int main() {
             bot.global_command_create(setPromptCommand);
             bot.global_command_create(resetPromptCommand);
             bot.global_command_create(hiddenSayCommand);
+            bot.global_command_create(historyCommand);
         }
     });
 

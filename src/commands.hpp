@@ -21,4 +21,5 @@ namespace commands {
     void SetPrompt(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void ResetPrompt(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void HiddenSay(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void History(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }
