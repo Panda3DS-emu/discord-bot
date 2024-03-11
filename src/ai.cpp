@@ -42,10 +42,7 @@ namespace artificial {
         promptFile.seekg(0, std::ios::beg);
         promptFile.read(&data[0], data.size());
         promptFile.close();
-
-        convo.AddUserData("Your prompt is: " + data);
-        convo.AddUserData("Follow it after this line.");
-        convo.AddUserData("---");
+        convo.SetSystemData("Your prompt is: " + data);
 
         std::ifstream funnyPromptFile("ai_funny_prompt.txt");
         std::string funnyData;
@@ -54,9 +51,7 @@ namespace artificial {
         funnyPromptFile.seekg(0, std::ios::beg);
         funnyPromptFile.read(&funnyData[0], funnyData.size());
         funnyPromptFile.close();
-        convoFunny.AddUserData("Your prompt is: " + funnyData);
-        convoFunny.AddUserData("Follow it after this line.");
-        convoFunny.AddUserData("---");
+        convoFunny.SetSystemData("Your prompt is: " + funnyData);
 
         initialized = true;
     }
@@ -102,22 +97,22 @@ namespace artificial {
             return;
         }
 
-        uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        if (timestamp - lastQuestionTimestamp < 1) {
-            event.reply(dpp::message("You can only ask a question every 1 second, or else Paris is going to go bankrupt."));
-            return;
-        }
-
-        lastQuestionTimestamp = timestamp;
-        convo.AddUserData("HUMAN: " + prompt + "\n");
         std::thread t([event, prompt] {
             std::lock_guard<std::mutex> lock(mutex);
+             uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            if (timestamp - lastQuestionTimestamp < 1) {
+                event.reply(dpp::message("You can only ask a question every 1 second, or else Paris is going to go bankrupt."));
+                return;
+            }
+            lastQuestionTimestamp = timestamp;
+
             if (rand() % 30 == 0) {
                 liboai::Response response = oai.ChatCompletion->create(
                     "gpt-3.5-turbo", convoFunny
                 );
                 event.reply(dpp::message(convoFunny.GetLastResponse()));
             } else {
+                convo.AddUserData("HUMAN: " + prompt + "\n");
                 liboai::Response response = oai.ChatCompletion->create(
                     "gpt-3.5-turbo", convo
                 );
