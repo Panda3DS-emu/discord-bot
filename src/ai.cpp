@@ -123,6 +123,7 @@ namespace artificial {
                 }
             } catch (std::exception& e) {
                 event.reply(dpp::message("This message crashed the AI lmao"));
+                convo.PopUserData();
             }
         });
         t.detach();
