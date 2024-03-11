@@ -98,27 +98,31 @@ namespace artificial {
         }
 
         std::thread t([event, prompt] {
-            std::lock_guard<std::mutex> lock(mutex);
-             uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            if (timestamp - lastQuestionTimestamp < 1) {
-                event.reply(dpp::message("You can only ask a question every 1 second, or else Paris is going to go bankrupt."));
-                return;
-            }
-            lastQuestionTimestamp = timestamp;
+            try {
+                std::lock_guard<std::mutex> lock(mutex);
+                uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                if (timestamp - lastQuestionTimestamp < 1) {
+                    event.reply(dpp::message("You can only ask a question every 1 second, or else Paris is going to go bankrupt."));
+                    return;
+                }
+                lastQuestionTimestamp = timestamp;
 
-            if (rand() % 30 == 0) {
-                liboai::Response response = oai.ChatCompletion->create(
-                    "gpt-3.5-turbo", convoFunny
-                );
-                event.reply(dpp::message(convoFunny.GetLastResponse()));
-            } else {
-                convo.AddUserData("HUMAN: " + prompt + "\n");
-                liboai::Response response = oai.ChatCompletion->create(
-                    "gpt-3.5-turbo", convo
-                );
-                response.content =  response.content;
-                convo.Update(response);
-                event.reply(dpp::message(convo.GetLastResponse()));
+                if (rand() % 10 == 0) {
+                    liboai::Response response = oai.ChatCompletion->create(
+                        "gpt-3.5-turbo", convoFunny
+                    );
+                    event.reply(dpp::message(convoFunny.GetLastResponse()));
+                } else {
+                    convo.AddUserData("HUMAN: " + prompt + "\n");
+                    liboai::Response response = oai.ChatCompletion->create(
+                        "gpt-3.5-turbo", convo
+                    );
+                    response.content =  response.content;
+                    convo.Update(response);
+                    event.reply(dpp::message(convo.GetLastResponse()));
+                }
+            } catch (std::exception& e) {
+                event.reply(dpp::message("This message crashed the AI lmao"));
             }
         });
         t.detach();
