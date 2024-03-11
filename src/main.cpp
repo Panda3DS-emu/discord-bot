@@ -53,6 +53,10 @@ int main() {
             commands::Panda(bot, event);
         } else if (name == "ask_panda") {
             commands::AskPanda(bot, event);
+        } else if (name == "set_prompt") {
+            admins::AdminCommand(commands::SetPrompt, bot, event);
+        } else if (name == "reset_prompt") {
+            admins::AdminCommand(commands::ResetPrompt, bot, event);
         }
     });
 
@@ -121,6 +125,13 @@ int main() {
                 dpp::command_option(dpp::co_string, "question", "The question to ask the panda", true)
             );
 
+            dpp::slashcommand setPromptCommand("set_prompt", "Set the prompt for the AI", bot.me.id);
+            setPromptCommand.add_option(
+                dpp::command_option(dpp::co_string, "prompt", "The prompt for the AI", true)
+            );
+
+            dpp::slashcommand resetPromptCommand("reset_prompt", "Reset the prompt for the AI", bot.me.id);
+
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
             bot.global_command_create(removeAdminCommand);
@@ -134,6 +145,8 @@ int main() {
             bot.global_command_create(currentPuzzleCommand);
             bot.global_command_create(pandaCommand);
             bot.global_command_create(askPandaCommand);
+            bot.global_command_create(setPromptCommand);
+            bot.global_command_create(resetPromptCommand);
         }
     });
 

@@ -15,7 +15,7 @@ liboai::Conversation convo;
 liboai::Conversation convoFunny;
 std::mutex mutex;
 int lazyResetPromptCounter = 0;
-std::string nonFunnyPrompt;
+std::string nonFunnyPrompt, originalPrompt;
 
 namespace artificial {
     
@@ -45,6 +45,7 @@ namespace artificial {
         promptFile.read(&data[0], data.size());
         promptFile.close();
         nonFunnyPrompt = data;
+        originalPrompt = data;
         convo.SetSystemData("Your prompt is: " + data);
 
         std::ifstream funnyPromptFile("ai_funny_prompt.txt");
@@ -137,6 +138,25 @@ namespace artificial {
                 event.reply(dpp::message("This message crashed the AI lmao"));
                 convo.PopUserData();
             }
+        });
+        t.detach();
+    }
+
+    void SetPrompt(const std::string& prompt) {
+        std::thread t([prompt] {
+            std::lock_guard<std::mutex> lock(mutex);
+            nonFunnyPrompt = prompt;
+            convo = liboai::Conversation();
+            convo.SetSystemData("Your prompt is: " + prompt);
+        });
+        t.detach();
+    }
+
+    void ResetPrompt() {
+        std::thread t([] {
+            std::lock_guard<std::mutex> lock(mutex);
+            convo = liboai::Conversation();
+            convo.SetSystemData("Your prompt is: " + originalPrompt);
         });
         t.detach();
     }

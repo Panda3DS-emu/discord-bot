@@ -203,4 +203,15 @@ namespace commands {
         event.reply(dpp::message("Just ping me in <#1118695733449723906> to ask your question!").set_flags(dpp::m_ephemeral));
     }
 
+    void SetPrompt(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        std::string prompt = std::get<std::string>(event.get_parameter("prompt"));
+        artificial::SetPrompt(prompt);
+        event.reply(dpp::message("Prompt set").set_flags(dpp::m_ephemeral));
+    }
+
+    void ResetPrompt(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        artificial::ResetPrompt();
+        event.reply(dpp::message("Prompt reset").set_flags(dpp::m_ephemeral));
+    }
+
 }
