@@ -15,6 +15,7 @@ liboai::Conversation convo;
 liboai::Conversation convoFunny;
 std::mutex mutex;
 int lazyResetPromptCounter = 0;
+std::string nonFunnyPrompt;
 
 namespace artificial {
     
@@ -43,6 +44,7 @@ namespace artificial {
         promptFile.seekg(0, std::ios::beg);
         promptFile.read(&data[0], data.size());
         promptFile.close();
+        nonFunnyPrompt = data;
         convo.SetSystemData("Your prompt is: " + data);
 
         std::ifstream funnyPromptFile("ai_funny_prompt.txt");
@@ -109,23 +111,25 @@ namespace artificial {
                 lastQuestionTimestamp = timestamp;
 
                 srand(time(0));
-                if (rand() % 5 == 0) {
+                int randomness = rand() % 5;
+                printf("randomness: %d\n", randomness);
+                if (randomness == 0) {
                     convoFunny.AddUserData("HUMAN: " + prompt + "\n");
                     liboai::Response response = oai.ChatCompletion->create(
                         "gpt-3.5-turbo", convoFunny
                     );
+                    convoFunny.Update(response);
                     event.reply(dpp::message(convoFunny.GetLastResponse()));
                 } else {
                     lazyResetPromptCounter++;
                     if (lazyResetPromptCounter > 20) {
                         convo = liboai::Conversation();
-                        convo.SetSystemData("Your prompt is: " + prompt);
+                        convo.SetSystemData("Your prompt is: " + nonFunnyPrompt);
                     }
                     convo.AddUserData("HUMAN: " + prompt + "\n");
                     liboai::Response response = oai.ChatCompletion->create(
                         "gpt-3.5-turbo", convo
                     );
-                    response.content =  response.content;
                     convo.Update(response);
                     event.reply(dpp::message(convo.GetLastResponse()));
                 }
