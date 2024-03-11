@@ -109,7 +109,7 @@ namespace artificial {
         }
 
         lastQuestionTimestamp = timestamp;
-        convo.AddUserData("HUMAN: " + prompt);
+        convo.AddUserData("HUMAN: " + prompt + "\n");
         std::thread t([event, prompt] {
             std::lock_guard<std::mutex> lock(mutex);
             if (rand() % 30 == 0) {
