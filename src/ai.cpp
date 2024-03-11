@@ -93,7 +93,7 @@ namespace artificial {
     }
 
     void AskQuestion(const dpp::message_create_t& event, const std::string& prompt) {
-        if (event.msg.channel_id != 1118695733449723906) {
+        if (event.msg.channel_id != 1118699588140941362) {
             return;
         }
 
@@ -112,7 +112,7 @@ namespace artificial {
         convo.AddUserData("HUMAN: " + prompt);
         std::thread t([event, prompt] {
             std::lock_guard<std::mutex> lock(mutex);
-            if (rand() % 20 == 0) {
+            if (rand() % 30 == 0) {
                 liboai::Response response = oai.ChatCompletion->create(
                     "gpt-3.5-turbo", convoFunny
                 );
