@@ -217,6 +217,7 @@ namespace commands {
     void HiddenSay(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         std::string message = std::get<std::string>(event.get_parameter("message"));
         bot.message_create(dpp::message(event.command.channel_id, message));
+        event.reply(dpp::message("Message sent").set_flags(dpp::m_ephemeral));
     }
 
 }
