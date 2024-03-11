@@ -57,6 +57,8 @@ int main() {
             admins::AdminCommand(commands::SetPrompt, bot, event);
         } else if (name == "reset_prompt") {
             admins::AdminCommand(commands::ResetPrompt, bot, event);
+        } else if (name == "hidden_say") {
+            admins::AdminCommand(commands::HiddenSay, bot, event);
         }
     });
 
@@ -132,6 +134,11 @@ int main() {
 
             dpp::slashcommand resetPromptCommand("reset_prompt", "Reset the prompt for the AI", bot.me.id);
 
+            dpp::slashcommand hiddenSayCommand("hidden_say", "Make the bot say something", bot.me.id);
+            hiddenSayCommand.add_option(
+                dpp::command_option(dpp::co_string, "message", "The message to say", true)
+            );
+
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
             bot.global_command_create(removeAdminCommand);
@@ -147,6 +154,7 @@ int main() {
             bot.global_command_create(askPandaCommand);
             bot.global_command_create(setPromptCommand);
             bot.global_command_create(resetPromptCommand);
+            bot.global_command_create(hiddenSayCommand);
         }
     });
 
