@@ -108,6 +108,7 @@ namespace artificial {
                 }
                 lastQuestionTimestamp = timestamp;
 
+                srand(time(0));
                 if (rand() % 5 == 0) {
                     convoFunny.AddUserData("HUMAN: " + prompt + "\n");
                     liboai::Response response = oai.ChatCompletion->create(
