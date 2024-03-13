@@ -67,8 +67,8 @@ namespace artificial {
         }
 
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        if (timestamp - lastImageTimestamp < 7200) {
-            event.reply(dpp::message("You can only generate an image every 2 hours, or else Paris is going to go bankrupt. Next image available <t:" + std::to_string(lastImageTimestamp + 7200) + ":R>"));
+        if (timestamp - lastImageTimestamp < 1200) {
+            event.reply(dpp::message("You can only generate an image every 20 minutes, or else Paris is going to go bankrupt. Next image available <t:" + std::to_string(lastImageTimestamp + 1200) + ":R>"));
             return;
         }
 
@@ -78,7 +78,7 @@ namespace artificial {
                 liboai::Response res = oai.Image->create(
                     prompt,
                     1,
-                    "256x256"
+                    "128x128"
                 );
 
                 std::string url = res["data"][0]["url"];
