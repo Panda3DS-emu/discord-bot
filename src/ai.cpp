@@ -108,7 +108,6 @@ namespace artificial {
 
         std::thread t([event, prompt] {
             try {
-                std::lock_guard<std::mutex> lock(mutex);
                 uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                 if (timestamp - lastQuestionTimestamp < 1) {
                     event.reply(dpp::message("You can only ask a question every 1 second, or else Paris is going to go bankrupt."));
@@ -120,26 +119,33 @@ namespace artificial {
                 int randomness = rand() % 20;
                 printf("randomness: %d\n", randomness);
                 if (randomness == 0) {
+                    std::unique_lock<std::mutex> lock(mutex);
                     convoFunny.AddUserData("HUMAN: " + prompt + "\n");
+                    lock.unlock();
                     liboai::Response response = oai.ChatCompletion->create(
                         "gpt-3.5-turbo", convoFunny
                     );
+                    lock.lock();
                     convoFunny.Update(response);
                     event.reply(dpp::message(convoFunny.GetLastResponse()));
                 } else {
+                    std::unique_lock<std::mutex> lock(mutex);
                     lazyResetPromptCounter++;
                     if (lazyResetPromptCounter > 20) {
                         convo = liboai::Conversation();
                         convo.SetSystemData(nonFunnyPrompt);
                     }
                     convo.AddUserData("HUMAN: " + prompt + "\n");
+                    lock.unlock();
                     liboai::Response response = oai.ChatCompletion->create(
                         "gpt-3.5-turbo", convo
                     );
+                    lock.lock();
                     convo.Update(response);
                     event.reply(dpp::message(convo.GetLastResponse()));
                 }
             } catch (std::exception& e) {
+                std::unique_lock<std::mutex> lock(mutex);
                 event.reply(dpp::message("This message crashed the AI lmao"));
                 convo = liboai::Conversation();
                 convo.SetSystemData(nonFunnyPrompt);
