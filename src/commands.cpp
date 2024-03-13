@@ -1,5 +1,6 @@
 #include "commands.hpp"
 #include "admin.hpp"
+#include "appcommand.h"
 #include "macros.hpp"
 #include <string>
 #include <toml.hpp>
@@ -202,6 +203,11 @@ namespace commands {
         artificial::GenerateImage(event, "A cute red panda!");
     }
 
+    void Image(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        std::string prompt = std::get<std::string>(event.get_parameter("prompt"));
+        artificial::GenerateImage(event, prompt);
+    }
+
     void AskPanda(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         event.reply(dpp::message("Just ping me in <#1118695733449723906> to ask your question!").set_flags(dpp::m_ephemeral));
     }
@@ -218,11 +224,32 @@ namespace commands {
     }
 
     void HiddenSay(dpp::cluster &bot, const dpp::slashcommand_t &event) {
-        std::string message = std::get<std::string>(event.get_parameter("message"));
-        bot.message_create(dpp::message(event.command.channel_id, message));
+        dpp::message message(event.command.channel_id, std::get<std::string>(event.get_parameter("message")));
+        auto replyId = event.command.msg.message_reference.message_id;
+        if (!replyId.empty()) {
+            message.set_reference(replyId);
+        }
+        bot.message_create(message);
         event.reply(dpp::message("Message sent").set_flags(dpp::m_ephemeral));
-        history.push_back("<@" + std::to_string(event.command.get_issuing_user().id) + "> said in <#" + std::to_string(event.command.channel_id) + ">: " + message);
-        if (history.size() > 10) {
+        history.push_back("<@" + std::to_string(event.command.get_issuing_user().id) + "> said in <#" + std::to_string(event.command.channel_id) + ">: " + message.content);
+        if (history.size() > 20) {
+            history.pop_front();
+        }
+    }
+
+    void HiddenFile(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        dpp::snowflake fileId = std::get<dpp::snowflake>(event.get_parameter("file"));
+        dpp::attachment att = event.command.get_resolved_attachment(fileId);
+        dpp::message message(event.command.channel_id, "");
+        message.add_file(att.filename, att.url);
+        auto replyId = event.command.msg.message_reference.message_id;
+        if (!replyId.empty()) {
+            message.set_reference(replyId);
+        }
+        bot.message_create(message);
+        event.reply(dpp::message("File sent").set_flags(dpp::m_ephemeral));
+        history.push_back("<@" + std::to_string(event.command.get_issuing_user().id) + "> sent a file in <#" + std::to_string(event.command.channel_id) + ">: " + att.filename);
+        if (history.size() > 20) {
             history.pop_front();
         }
     }
@@ -244,7 +271,6 @@ namespace commands {
             .set_description(response);
 
         event.reply(dpp::message(event.command.channel_id, embed));
-
     }
 
 }

@@ -17,9 +17,11 @@ namespace commands {
     void SolvePuzzle(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void CurrentPuzzle(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Panda(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void Image(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void AskPanda(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void SetPrompt(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void ResetPrompt(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void HiddenSay(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void HiddenFile(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void History(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }

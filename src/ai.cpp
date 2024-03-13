@@ -46,7 +46,7 @@ namespace artificial {
         promptFile.close();
         nonFunnyPrompt = data;
         originalPrompt = data;
-        convo.SetSystemData("Your prompt is: " + data);
+        convo.SetSystemData(data);
 
         std::ifstream funnyPromptFile("ai_funny_prompt.txt");
         std::string funnyData;
@@ -55,7 +55,7 @@ namespace artificial {
         funnyPromptFile.seekg(0, std::ios::beg);
         funnyPromptFile.read(&funnyData[0], funnyData.size());
         funnyPromptFile.close();
-        convoFunny.SetSystemData("Your prompt is: " + funnyData);
+        convoFunny.SetSystemData(funnyData);
 
         initialized = true;
     }
@@ -125,7 +125,7 @@ namespace artificial {
                     lazyResetPromptCounter++;
                     if (lazyResetPromptCounter > 20) {
                         convo = liboai::Conversation();
-                        convo.SetSystemData("Your prompt is: " + nonFunnyPrompt);
+                        convo.SetSystemData(nonFunnyPrompt);
                     }
                     convo.AddUserData("HUMAN: " + prompt + "\n");
                     liboai::Response response = oai.ChatCompletion->create(
@@ -136,7 +136,8 @@ namespace artificial {
                 }
             } catch (std::exception& e) {
                 event.reply(dpp::message("This message crashed the AI lmao"));
-                convo.PopUserData();
+                convo = liboai::Conversation();
+                convo.SetSystemData(nonFunnyPrompt);
             }
         });
         t.detach();
@@ -147,7 +148,7 @@ namespace artificial {
             std::lock_guard<std::mutex> lock(mutex);
             nonFunnyPrompt = prompt;
             convo = liboai::Conversation();
-            convo.SetSystemData("Your prompt is: " + prompt);
+            convo.SetSystemData(prompt);
         });
         t.detach();
     }
@@ -156,7 +157,7 @@ namespace artificial {
         std::thread t([] {
             std::lock_guard<std::mutex> lock(mutex);
             convo = liboai::Conversation();
-            convo.SetSystemData("Your prompt is: " + originalPrompt);
+            convo.SetSystemData(originalPrompt);
         });
         t.detach();
     }

@@ -27,6 +27,7 @@ int main() {
 
     bot.on_slashcommand([&bot](const dpp::slashcommand_t& event) {
         std::string name = event.command.get_command_name();
+        // I cba to use a neater way rn but TODO refactor this
         if (name == "settings") {
             commands::Settings(bot, event);
         } else if (name == "add_admin") {
@@ -59,8 +60,12 @@ int main() {
             admins::AdminCommand(commands::ResetPrompt, bot, event);
         } else if (name == "hidden_say") {
             admins::AdminCommand(commands::HiddenSay, bot, event);
+        } else if (name == "hidden_file") {
+            admins::AdminCommand(commands::HiddenFile, bot, event);
         } else if (name == "history") {
             commands::History(bot, event);
+        } else if (name == "image") {
+            admins::AdminCommand(commands::Image, bot, event);
         }
     });
 
@@ -141,7 +146,17 @@ int main() {
                 dpp::command_option(dpp::co_string, "message", "The message to say", true)
             );
 
+            dpp::slashcommand hiddenFileCommand("hidden_file", "Make the bot send a file", bot.me.id);
+            hiddenFileCommand.add_option(
+                dpp::command_option(dpp::co_attachment, "file", "The file to send", true)
+            );
+
             dpp::slashcommand historyCommand("history", "Show the hidden_say history of the bot", bot.me.id);
+
+            dpp::slashcommand imageCommand("image", "Generate an image from the AI", bot.me.id);
+            imageCommand.add_option(
+                dpp::command_option(dpp::co_string, "prompt", "The prompt for the AI", true)
+            );
 
             bot.global_command_create(logFileCommand);
             bot.global_command_create(addAdminCommand);
@@ -159,7 +174,9 @@ int main() {
             bot.global_command_create(setPromptCommand);
             bot.global_command_create(resetPromptCommand);
             bot.global_command_create(hiddenSayCommand);
+            bot.global_command_create(hiddenFileCommand);
             bot.global_command_create(historyCommand);
+            bot.global_command_create(imageCommand);
         }
     });
 
