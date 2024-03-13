@@ -88,6 +88,7 @@ namespace artificial {
                         .set_title("Your artificial panda is ready!");
                     event.edit_original_response(dpp::message(event.command.channel_id, embed));
                 } catch (std::exception& e) {
+                    printf("Exception: %s\n", e.what());
                     event.edit_original_response(dpp::message("This message crashed the AI lmao"));
                 }
             });
