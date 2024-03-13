@@ -75,17 +75,21 @@ namespace artificial {
         lastImageTimestamp = timestamp;
         event.thinking(false, [event, prompt](const dpp::confirmation_callback_t& callback) {
             std::thread t([event, prompt] {
-                liboai::Response res = oai.Image->create(
-                    prompt,
-                    1,
-                    "128x128"
-                );
+                try {
+                    liboai::Response res = oai.Image->create(
+                        prompt,
+                        1,
+                        "256x256"
+                    );
 
-                std::string url = res["data"][0]["url"];
-                dpp::embed embed = dpp::embed()
-                    .set_image(url)
-                    .set_title("Your artificial panda is ready!");
-                event.edit_original_response(dpp::message(event.command.channel_id, embed));
+                    std::string url = res["data"][0]["url"];
+                    dpp::embed embed = dpp::embed()
+                        .set_image(url)
+                        .set_title("Your artificial panda is ready!");
+                    event.edit_original_response(dpp::message(event.command.channel_id, embed));
+                } catch (std::exception& e) {
+                    event.edit_original_response(dpp::message("This message crashed the AI lmao"));
+                }
             });
             t.detach();
         });
