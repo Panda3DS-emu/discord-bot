@@ -173,4 +173,13 @@ namespace artificial {
         t.detach();
     }
 
+    void ClearContext() {
+        std::thread t([] {
+            std::lock_guard<std::mutex> lock(mutex);
+            convo = liboai::Conversation();
+            convo.SetSystemData(nonFunnyPrompt);
+        });
+        t.detach();
+    }
+
 }

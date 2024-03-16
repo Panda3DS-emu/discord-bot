@@ -9,4 +9,5 @@ namespace artificial {
     void AskQuestion(const dpp::message_create_t& event, const std::string& question);
     void SetPrompt(const std::string& prompt);
     void ResetPrompt();
+    void ClearContext();
 }

@@ -225,9 +225,9 @@ namespace commands {
 
     void HiddenSay(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         dpp::message message(event.command.channel_id, std::get<std::string>(event.get_parameter("message")));
-        auto replyId = event.command.msg.message_reference.message_id;
-        if (!replyId.empty()) {
-            message.set_reference(replyId);
+        std::string message_id = std::get<std::string>(event.get_parameter("message_id"));
+        if (!message_id.empty()) {
+            message.set_reference(message_id);
         }
         bot.message_create(message);
         event.reply(dpp::message("Message sent").set_flags(dpp::m_ephemeral));
@@ -241,10 +241,10 @@ namespace commands {
         dpp::snowflake fileId = std::get<dpp::snowflake>(event.get_parameter("file"));
         dpp::attachment att = event.command.get_resolved_attachment(fileId);
         dpp::message message(event.command.channel_id, "");
+        std::string message_id = std::get<std::string>(event.get_parameter("message_id"));
         message.add_file(att.filename, att.url);
-        auto replyId = event.command.msg.message_reference.message_id;
-        if (!replyId.empty()) {
-            message.set_reference(replyId);
+        if (!message_id.empty()) {
+            message.set_reference(message_id);
         }
         bot.message_create(message);
         event.reply(dpp::message("File sent").set_flags(dpp::m_ephemeral));
@@ -271,6 +271,11 @@ namespace commands {
             .set_description(response);
 
         event.reply(dpp::message(event.command.channel_id, embed));
+    }
+
+    void ClearContext(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        artificial::ClearContext();
+        event.reply(dpp::message("Context cleared").set_flags(dpp::m_ephemeral));
     }
 
 }
