@@ -219,6 +219,8 @@ int main() {
             } else {
                 command->function(bot, event);
             }
+        } else {
+            std::cerr << "Unknown command: " << name << std::endl;
         }
     });
 

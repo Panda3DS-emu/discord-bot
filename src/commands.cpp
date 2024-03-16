@@ -226,6 +226,7 @@ namespace commands {
     void HiddenSay(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         dpp::message message(event.command.channel_id, std::get<std::string>(event.get_parameter("message")));
         std::string message_id = std::get<std::string>(event.get_parameter("message_id"));
+        printf("Running hidden say (%s)\n", message_id.c_str());
         if (!message_id.empty()) {
             message.set_reference(message_id);
         }
