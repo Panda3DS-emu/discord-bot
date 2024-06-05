@@ -288,4 +288,16 @@ namespace commands {
         poke::Wish(event);
     }
 
+    void Daily(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::Daily(event);
+    }
+
+    void List(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::List(event);
+    }
+
+    void Favorite(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::Favorite(event);
+    }
+
 }

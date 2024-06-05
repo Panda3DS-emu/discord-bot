@@ -201,6 +201,29 @@ Command botCommands[] = {
         .function = commands::Wish,
         .adminOnly = false,
         .options = {}
+    },
+    {
+        .name = "daily",
+        .description = "Get your daily wishes",
+        .function = commands::Daily,
+        .adminOnly = false,
+        .options = {}
+    },
+    {
+        .name = "list",
+        .description = "List your Pokemon",
+        .function = commands::List,
+        .adminOnly = false,
+        .options = {}
+    },
+    {
+        .name = "favorite",
+        .description = "Favorite a Pokemon",
+        .function = commands::Favorite,
+        .adminOnly = false,
+        .options = {
+            dpp::command_option(dpp::co_string, "pokemon", "The Pokemon to favorite", true)
+        }
     }
 };
 
