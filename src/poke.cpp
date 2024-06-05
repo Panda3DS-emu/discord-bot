@@ -16,15 +16,56 @@ namespace poke {
         644, 645, 646, 647, 648, 649, 716, 717, 718, 719, 
         720, 721, 785, 786, 787, 788, 789, 790, 791, 792, 
         800, 801, 802, 807, 888, 889, 890, 891, 892, 894, 
-        895, 896, 897, 898
+        895, 896, 897, 898,
+
+        149,  // Dragonite
+        248,  // Tyranitar
+        373,  // Salamence
+        376,  // Metagross
+        445,  // Garchomp
+        635,  // Hydreigon
+        706,  // Goodra
+        784,  // Kommo-o
+        883,  // Dragapult
+        997,  // Baxcalibur
+
+        3,    // Venusaur
+        6,    // Charizard
+        9,    // Blastoise
+        65,   // Alakazam
+        94,   // Gengar
+        143,  // Snorlax
+        197,  // Umbreon
+        212,  // Scizor
+        282,  // Gardevoir
+        330,  // Flygon
+        448,  // Lucario
+        466,  // Electivire
+        467,  // Magmortar
+        477,  // Dusknoir
+        530,  // Excadrill
+        571,  // Zoroark
+        609,  // Chandelure
+        745,  // Lycanroc
+        763,  // Tsareena
+        859,  // Grimmsnarl
     };
     
     time_t lastBanner;
     int bannerPokemon;
 
+    using Pokemon = std::vector<std::string>;
+
+    enum PokemonIndex {
+        ID = 0,
+        SHINY = 1,
+
+        SIZE,
+    };
+
     struct User {
         int wishes;
-        std::vector<std::string> pokemon;
+        std::vector<Pokemon> pokemon;
         time_t daily;
         int pity;
     };
@@ -49,8 +90,21 @@ namespace poke {
             User user;
             user.wishes = toml::get<int>(table["wishes"]);
             user.daily = toml::get<time_t>(table["daily"]);
-            user.pokemon = toml::get<std::vector<std::string>>(table["pokemon"]);
+            user.pokemon = toml::get<std::vector<Pokemon>>(table["pokemon"]);
             user.pity = toml::get<int>(table["pity"]);
+
+            for (auto& pokemon : user.pokemon)
+            {
+                if (pokemon.size() < PokemonIndex::SIZE)
+                {
+                    pokemon.resize(PokemonIndex::SIZE);
+                }
+
+                if (pokemon[SHINY] != "true" && pokemon[SHINY] != "false")
+                {
+                    pokemon[SHINY] = "false";
+                }
+            }
 
             users[std::stoull(entry.path().filename().string())] = user;
         }
@@ -94,7 +148,7 @@ namespace poke {
             return;
         } else {
             User user;
-            user.wishes = 5;
+            user.wishes = 10;
             user.daily = 0;
             user.pokemon = {};
             user.pity = 0;
@@ -163,6 +217,7 @@ namespace poke {
         } else {
             int roll1 = (rand() % 920) + 1;
             int roll2 = (rand() % 920) + 1;
+            bool shiny = (rand() % 128) == 0;
             int roll;
 
             if (roll1 == bannerPokemon || roll2 == bannerPokemon)
@@ -189,20 +244,36 @@ namespace poke {
 
             users[id].wishes--;
 
+            std::string shinyText = shiny ? "SHINY! ✨ " : "";
+
             if (roll == bannerPokemon)
             {
-                embed.set_title("WOAH! You got #" + std::to_string(roll) + "!");
+                embed.set_title(shinyText + "WOAH! You got #" + std::to_string(roll) + "! ");
                 embed.set_color(dpp::colors::orange);
             } else {
-                embed.set_title("You got #" + std::to_string(roll) + ".");
+                embed.set_title(shinyText + "You got #" + std::to_string(roll) + ".");
                 embed.set_color(dpp::colors::green);
             }
 
-            if (std::find(users[id].pokemon.begin(), users[id].pokemon.end(), std::to_string(roll)) == users[id].pokemon.end())
+            bool found = false;
+
+            for (auto& pokemon : users[id].pokemon)
             {
-                users[id].pokemon.push_back(std::to_string(roll));
+                if (pokemon[ID] == std::to_string(roll))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                Pokemon pokemon;
+                pokemon.push_back(std::to_string(roll));
+                pokemon.push_back(shiny ? "true" : "false");
+                users[id].pokemon.push_back(pokemon);
             } else {
-                embed.set_description("You already have this pokemon so it decomposed into 1 wish.");
+                embed.set_footer("You already have this pokemon so it decomposed into 1 wish.", "");
             }
 
             if (roll == bannerPokemon)
@@ -235,12 +306,12 @@ namespace poke {
             .set_color(0x00FF00);
 
         if (users[id].pokemon.size() > 0)
-            embed.set_thumbnail("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + users[id].pokemon[0] + ".gif");
+            embed.set_thumbnail("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + users[id].pokemon[0][0] + ".gif");
 
         std::string description = "";
-        for (std::string pokemon : users[id].pokemon)
+        for (auto& pokemon : users[id].pokemon)
         {
-            description += "#" + pokemon + "\n";
+            description += "#" + pokemon[ID] + (pokemon[SHINY] == "true" ? "✨" : "") + "\n";
         }
 
         embed.set_description(description);
@@ -256,12 +327,26 @@ namespace poke {
 
         std::string pokemon = std::get<std::string>(event.get_parameter("pokemon"));
 
-        if (std::find(users[id].pokemon.begin(), users[id].pokemon.end(), pokemon) == users[id].pokemon.end())
+        bool found = false;
+
+        Pokemon selectedPokemon;
+
+        for (auto& p : users[id].pokemon)
+        {
+            if (p[ID] == pokemon)
+            {
+                found = true;
+                selectedPokemon = p;
+                break;
+            }
+        }
+
+        if (!found)
         {
             event.reply("You don't have that Pokemon.");
         } else {
-            users[id].pokemon.erase(std::remove(users[id].pokemon.begin(), users[id].pokemon.end(), pokemon), users[id].pokemon.end());
-            users[id].pokemon.insert(users[id].pokemon.begin(), pokemon);
+            users[id].pokemon.erase(std::remove(users[id].pokemon.begin(), users[id].pokemon.end(), selectedPokemon), users[id].pokemon.end());
+            users[id].pokemon.insert(users[id].pokemon.begin(), selectedPokemon);
 
             std::ofstream file(getPath(id));
             toml::table table;
