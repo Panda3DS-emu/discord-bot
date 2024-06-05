@@ -50,6 +50,7 @@ namespace poke {
             user.wishes = toml::get<int>(table["wishes"]);
             user.daily = toml::get<time_t>(table["daily"]);
             user.pokemon = toml::get<std::vector<std::string>>(table["pokemon"]);
+            user.pity = toml::get<int>(table["pity"]);
 
             users[std::stoull(entry.path().filename().string())] = user;
         }
@@ -61,6 +62,13 @@ namespace poke {
         } else {
             lastBanner = time(nullptr);
             bannerPokemon = legendaries[rand() % legendaries.size()];
+
+            toml::table table;
+            table["lastBanner"] = lastBanner;
+            table["bannerPokemon"] = bannerPokemon;
+
+            std::ofstream file("banner.toml");
+            file << toml::value(table);
         }
     }
 
@@ -96,6 +104,7 @@ namespace poke {
             table["wishes"] = user.wishes;
             table["daily"] = user.daily;
             table["pokemon"] = user.pokemon;
+            table["pity"] = user.pity;
 
             std::ofstream file(getPath(nid));
             file << toml::value(table);
@@ -123,6 +132,7 @@ namespace poke {
             table["wishes"] = users[id].wishes;
             table["daily"] = users[id].daily;
             table["pokemon"] = users[id].pokemon;
+            table["pity"] = users[id].pity;
             file << toml::value(table);
 
             event.reply("You claimed your daily reward. You now have " + std::to_string(users[id].wishes) + " wishes.");
@@ -209,6 +219,7 @@ namespace poke {
             table["wishes"] = users[id].wishes;
             table["daily"] = users[id].daily;
             table["pokemon"] = users[id].pokemon;
+            table["pity"] = users[id].pity;
             file << toml::value(table);
         }
     }
@@ -257,6 +268,7 @@ namespace poke {
             table["wishes"] = users[id].wishes;
             table["daily"] = users[id].daily;
             table["pokemon"] = users[id].pokemon;
+            table["pity"] = users[id].pity;
             file << toml::value(table);
 
             event.reply("You favorited " + pokemon + ".");
@@ -272,10 +284,11 @@ namespace poke {
         std::string url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + std::to_string(bannerPokemon) + ".gif";
 
         dpp::embed embed = dpp::embed()
-            .set_image(url)
+            .set_thumbnail(url)
             .set_title("Today's banner is #" + std::to_string(bannerPokemon) + "!")
-            .set_description("This pokemon has double chance to appear when you wish and you are guaranteed to get it after 50 wishes. Next banner reset: <t:" + std::to_string(lastBanner + 259200) + ":R>. Wishes left until banner pull: " + std::to_string(50 - users[id].pity))
-            .set_color(dpp::colors::purple);
+            .set_description("This pokemon has double chance to appear when you wish and you are guaranteed to get it after 50 wishes. Wishes left until banner pull: " + std::to_string(50 - users[id].pity))
+            .set_footer("Next banner reset: <t:" + std::to_string(lastBanner + 259200) + ":R>.", "")
+            .set_color(dpp::colors::orange);
         
         event.reply(dpp::message(event.command.channel_id, embed));
     }
