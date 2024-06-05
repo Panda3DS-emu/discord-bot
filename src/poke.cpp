@@ -294,7 +294,7 @@ namespace poke {
                 }
             }
 
-            if (found)
+            if (!found)
             {
                 Pokemon pokemon;
                 pokemon.push_back(std::to_string(roll));
