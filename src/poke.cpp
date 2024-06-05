@@ -95,7 +95,7 @@ namespace poke {
         } else {
             User user;
             user.wishes = 5;
-            user.daily = time(nullptr);
+            user.daily = 0;
             user.pokemon = {};
             user.pity = 0;
             users[std::stoull(id)] = user;
@@ -171,8 +171,8 @@ namespace poke {
             } else {
                 roll = roll1;
 
-                // Can't roll legendaries that are not the banner
-                while (std::find(legendaries.begin(), legendaries.end(), roll) != legendaries.end())
+                // Reroll once if legendary, to make them rarer
+                if (std::find(legendaries.begin(), legendaries.end(), roll) != legendaries.end())
                 {
                     roll = (rand() % 920) + 1;
                 }
@@ -286,8 +286,8 @@ namespace poke {
         dpp::embed embed = dpp::embed()
             .set_thumbnail(url)
             .set_title("Today's banner is #" + std::to_string(bannerPokemon) + "!")
-            .set_description("This pokemon has double chance to appear when you wish and you are guaranteed to get it after 50 wishes. Wishes left until banner pull: " + std::to_string(50 - users[id].pity))
-            .set_footer("Next banner reset: <t:" + std::to_string(lastBanner + 259200) + ":R>.", "")
+            .set_description("This pokemon has double chance to appear when you wish and you are guaranteed to get it after 50 wishes.\n\nNext banner reset: <t:" + std::to_string(lastBanner + 259200) + ":R>.")
+            .set_footer("Wishes left until banner pull: " + std::to_string(50 - users[id].pity), "")
             .set_color(dpp::colors::orange);
         
         event.reply(dpp::message(event.command.channel_id, embed));
