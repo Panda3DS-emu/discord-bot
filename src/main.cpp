@@ -231,6 +231,13 @@ Command botCommands[] = {
         .function = commands::Banner,
         .adminOnly = false,
         .options = {}
+    },
+    {
+        .name = "leaderboard",
+        .description = "Show the leaderboard",
+        .function = commands::Leaderboard,
+        .adminOnly = false,
+        .options = {}
     }
 };
 

@@ -304,4 +304,8 @@ namespace commands {
         poke::Banner(event);
     }
 
+    void Leaderboard(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::Leaderboard(event);
+    }
+
 }

@@ -72,6 +72,9 @@ namespace poke {
     time_t lastBanner;
     int bannerPokemon;
 
+    bool leaderboardInvalidated = true;
+    std::vector<std::pair<uint64_t, int>> leaderboard;
+
     using Pokemon = std::vector<std::string>;
 
     enum PokemonIndex {
@@ -224,6 +227,7 @@ namespace poke {
     void Wish(const dpp::slashcommand_t& event)
     {
         std::lock_guard<std::mutex> lock(mtx);
+        leaderboardInvalidated = true;
         uint64_t id = event.command.get_issuing_user().id;
         CheckAndCreateUser(id);
 
@@ -425,6 +429,66 @@ namespace poke {
             .set_footer("Wishes left until banner pull: " + std::to_string(50 - users[id].pity), "")
             .set_color(dpp::colors::orange);
         
+        event.reply(dpp::message(event.command.channel_id, embed));
+    }
+
+    void Leaderboard(const dpp::slashcommand_t &event)
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        uint64_t id = event.command.get_issuing_user().id;
+        CheckAndCreateUser(id);
+
+        if (leaderboardInvalidated) {
+            leaderboard.clear();
+
+            for (auto& user : users)
+            {
+                int sum = 0;
+                for (auto& pokemon : user.second.pokemon)
+                {
+                    if (pokemon[SHINY] == "true")
+                    {
+                        sum += 5;
+                    } else {
+                        sum++;
+                    }
+
+                    if (std::find(legendaries.begin(), legendaries.end(), std::stoi(pokemon[ID])) != legendaries.end())
+                    {
+                        sum += 10;
+                    }
+                }
+
+                leaderboard.push_back({ user.first, sum });
+            }
+
+            std::sort(leaderboard.begin(), leaderboard.end(), [](const std::pair<uint64_t, int>& a, const std::pair<uint64_t, int>& b) {
+                return a.second > b.second;
+            });
+
+            leaderboardInvalidated = false;
+        }
+
+        dpp::embed embed = dpp::embed()
+            .set_title("Leaderboard")
+            .set_color(0x00FF00);
+
+        std::string description = "";
+        int i = 1;
+
+        for (auto& user : leaderboard)
+        {
+            description += std::to_string(i) + ". <@" + std::to_string(user.first) + "> - " + std::to_string(user.second) + " points\n";
+            i++;
+
+            if (i > 10)
+            {
+                break;
+            }
+        }
+
+        embed.set_description(description);
+
         event.reply(dpp::message(event.command.channel_id, embed));
     }
 
