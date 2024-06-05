@@ -67,8 +67,6 @@ namespace poke {
         470,  // Leafeon
         471,  // Glaceon
         700,  // Sylveon
-
-        888,  // Zacian
     };
     
     time_t lastBanner;
@@ -266,7 +264,7 @@ namespace poke {
                 legendary = true;
             }
             
-            std::string url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + std::to_string(roll) + ".gif";
+            std::string url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + std::to_string(roll) + ".gif";
             dpp::embed embed = dpp::embed()
                 .set_image(url);
 
@@ -355,8 +353,10 @@ namespace poke {
             .set_title("You have " + std::to_string(users[id].pokemon.size()) + " Pokemon.")
             .set_color(0x00FF00);
 
-        if (users[id].pokemon.size() > 0)
-            embed.set_thumbnail("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + users[id].pokemon[0][0] + ".gif");
+        if (users[id].pokemon.size() > 0) {
+            bool shiny = users[id].pokemon[0][SHINY] == "true";
+            embed.set_thumbnail("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + users[id].pokemon[0][ID] + ".gif");
+        }
 
         std::string description = "";
         for (auto& pokemon : users[id].pokemon)
