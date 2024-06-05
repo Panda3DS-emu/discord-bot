@@ -10,6 +10,6 @@ add_subdirectory(third_party/DPP)
 add_subdirectory(third_party/toml11)
 add_subdirectory(third_party/liboai/liboai)
 
-add_executable(Panda3DSBot src/main.cpp src/commands.cpp src/admin.cpp src/macros.cpp src/ai.cpp)
+add_executable(Panda3DSBot src/main.cpp src/commands.cpp src/admin.cpp src/macros.cpp src/ai.cpp src/poke.cpp)
 target_include_directories(Panda3DSBot PRIVATE third_party/DPP/include third_party/toml11 third_party/liboai/liboai/include)
 target_link_libraries(Panda3DSBot dpp oai)
