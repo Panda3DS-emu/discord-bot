@@ -300,4 +300,8 @@ namespace commands {
         poke::Favorite(event);
     }
 
+    void Banner(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::Banner(event);
+    }
+
 }

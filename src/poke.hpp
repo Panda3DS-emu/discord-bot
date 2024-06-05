@@ -10,5 +10,6 @@ namespace poke {
     void Wishes(const dpp::slashcommand_t& event);
     void List(const dpp::slashcommand_t& event);
     void Favorite(const dpp::slashcommand_t& event);
+    void Banner(const dpp::slashcommand_t& event);
 
 }

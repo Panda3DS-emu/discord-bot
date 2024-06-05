@@ -30,4 +30,5 @@ namespace commands {
     void Daily(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void List(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Favorite(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void Banner(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }

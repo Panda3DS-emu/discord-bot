@@ -224,6 +224,13 @@ Command botCommands[] = {
         .options = {
             dpp::command_option(dpp::co_string, "pokemon", "The Pokemon to favorite", true)
         }
+    },
+    {
+        .name = "banner",
+        .description = "Show the current legendary banner",
+        .function = commands::Banner,
+        .adminOnly = false,
+        .options = {}
     }
 };
 
