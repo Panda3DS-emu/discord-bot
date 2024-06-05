@@ -4,6 +4,7 @@
 #include "commands.hpp"
 #include "macros.hpp"
 #include "ai.hpp"
+#include "poke.hpp"
 
 constexpr bool clearCommands = false;
 
@@ -186,6 +187,20 @@ Command botCommands[] = {
         .function = commands::ClearContext,
         .adminOnly = true,
         .options = {}
+    },
+    {
+        .name = "wishes",
+        .description = "See how many wishes you have",
+        .function = commands::Wishes,
+        .adminOnly = false,
+        .options = {}
+    },
+    {
+        .name = "wish",
+        .description = "Make a wish",
+        .function = commands::Wish,
+        .adminOnly = false,
+        .options = {}
     }
 };
 
@@ -193,6 +208,7 @@ int main() {
     admins::Initialize();
     macros::Initialize();
     artificial::Initialize();
+    poke::Initialize();
 
     std::string token;
     std::ifstream tokenFile("token.txt");

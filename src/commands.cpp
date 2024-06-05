@@ -2,9 +2,10 @@
 #include "admin.hpp"
 #include "appcommand.h"
 #include "macros.hpp"
+#include "ai.hpp"
+#include "poke.hpp"
 #include <string>
 #include <toml.hpp>
-#include "ai.hpp"
 
 std::string boolToCheckbox(bool value) {
     return value ? "☑" : "☐";
@@ -277,6 +278,14 @@ namespace commands {
     void ClearContext(dpp::cluster &bot, const dpp::slashcommand_t &event) {
         artificial::ClearContext();
         event.reply(dpp::message("Context cleared").set_flags(dpp::m_ephemeral));
+    }
+
+    void Wishes(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::Wishes(event);
+    }
+
+    void Wish(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::Wish(event);
     }
 
 }

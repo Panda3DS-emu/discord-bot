@@ -1,7 +1,6 @@
 #pragma once
 
 #include "commands.hpp"
-#include <functional>
 
 namespace admins {
     // Runs a command callback after first checking the user has admin priviledges

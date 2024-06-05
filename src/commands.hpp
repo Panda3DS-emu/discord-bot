@@ -25,4 +25,6 @@ namespace commands {
     void HiddenFile(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void History(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void ClearContext(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void Wishes(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void Wish(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }
