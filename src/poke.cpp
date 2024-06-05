@@ -34,8 +34,13 @@ namespace poke {
         9,    // Blastoise
         65,   // Alakazam
         94,   // Gengar
+        95,   // Onix
+        112,  // Rhydon
+        130,  // Gyarados
+        131,  // Lapras
         143,  // Snorlax
         197,  // Umbreon
+        208,  // Steelix
         212,  // Scizor
         282,  // Gardevoir
         330,  // Flygon
@@ -49,6 +54,21 @@ namespace poke {
         745,  // Lycanroc
         763,  // Tsareena
         859,  // Grimmsnarl
+
+        25,   // Pikachu
+        172,  // Pichu
+        201,  // Unown
+        282,  // Gardevoir
+        134,  // Vaporeon
+        135,  // Jolteon
+        136,  // Flareon
+        196,  // Espeon
+        197,  // Umbreon
+        470,  // Leafeon
+        471,  // Glaceon
+        700,  // Sylveon
+
+        888,  // Zacian
     };
     
     time_t lastBanner;
@@ -218,6 +238,7 @@ namespace poke {
             int roll1 = (rand() % 920) + 1;
             int roll2 = (rand() % 920) + 1;
             bool shiny = (rand() % 128) == 0;
+            bool legendary = false;
             int roll;
 
             if (roll1 == bannerPokemon || roll2 == bannerPokemon)
@@ -231,11 +252,18 @@ namespace poke {
                 {
                     roll = (rand() % 920) + 1;
                 }
+
+                if (std::find(legendaries.begin(), legendaries.end(), roll) != legendaries.end())
+                {
+                    users[id].pity = 0;
+                    legendary = true;
+                }
             }
 
             if (users[id].pity >= 50)
             {
                 roll = bannerPokemon;
+                legendary = true;
             }
             
             std::string url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + std::to_string(roll) + ".gif";
@@ -246,7 +274,7 @@ namespace poke {
 
             std::string shinyText = shiny ? "SHINY! ✨ " : "";
 
-            if (roll == bannerPokemon)
+            if (legendary)
             {
                 embed.set_title(shinyText + "WOAH! You got #" + std::to_string(roll) + "! ");
                 embed.set_color(dpp::colors::orange);
@@ -273,7 +301,29 @@ namespace poke {
                 pokemon.push_back(shiny ? "true" : "false");
                 users[id].pokemon.push_back(pokemon);
             } else {
-                embed.set_footer("You already have this pokemon so it decomposed into 1 wish.", "");
+                if (shiny) {
+                    embed.set_footer("You already have this pokemon as a non-shiny, so your shiny variant decomposed into 1 wish.", "");
+                    users[id].wishes++;
+                    
+                    for (auto& pokemon : users[id].pokemon)
+                    {
+                        if (pokemon[ID] == std::to_string(roll))
+                        {
+                            pokemon[SHINY] = "true";
+                            break;
+                        }
+                    }
+                }
+
+                bool decompose = (rand() % 3) == 0;
+
+                if (decompose)
+                {
+                    embed.set_footer("You already have this pokemon so it decomposed into 1 wish.", "");
+                    users[id].wishes++;
+                } else {
+                    embed.set_footer("You already have this pokemon so it decomposed.", "");
+                }
             }
 
             if (roll == bannerPokemon)
