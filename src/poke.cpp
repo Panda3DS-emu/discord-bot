@@ -195,9 +195,9 @@ namespace poke {
         time_t now = time(nullptr);
         time_t daily = users[id].daily;
 
-        if (now - daily < 86400)
+        if (now - daily < 86400 / 4)
         {
-            event.reply("You already claimed your daily reward.");
+            event.reply("You already claimed your daily reward. Next claim <t:" + std::to_string(daily + 86400 / 4) + ":R>.");
         } else {
             users[id].daily = now;
             users[id].wishes += 5;
@@ -210,7 +210,7 @@ namespace poke {
             table["pity"] = users[id].pity;
             file << toml::value(table);
 
-            event.reply("You claimed your daily reward. You now have " + std::to_string(users[id].wishes) + " wishes.");
+            event.reply("You claimed your daily reward. You now have " + std::to_string(users[id].wishes) + " wishes. Next daily reset <t:" + std::to_string(now + 86400 / 4) + ":R>.");
         }
     }
 
@@ -246,6 +246,7 @@ namespace poke {
             if (roll1 == bannerPokemon || roll2 == bannerPokemon)
             {
                 roll = bannerPokemon;
+                legendary = true;
             } else {
                 roll = roll1;
 
@@ -257,13 +258,13 @@ namespace poke {
 
                 if (std::find(legendaries.begin(), legendaries.end(), roll) != legendaries.end())
                 {
-                    users[id].pity = 0;
                     legendary = true;
                 }
             }
 
             if (users[id].pity >= 50)
             {
+                users[id].pity = 0;
                 roll = bannerPokemon;
                 legendary = true;
             }
