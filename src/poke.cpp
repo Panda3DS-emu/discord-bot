@@ -516,13 +516,18 @@ namespace poke {
 
         if (wishesOnRed < 0 || wishesOnBlack < 0)
         {
-            event.reply("You can't bet negative wishes.");
+            event.reply("You can't bet negative wishes. Your favorite pokemon has been decomposed as a punishment.");
+            return;
+        }
+
+        if (wishesOnRed + wishesOnBlack == 0) {
+            event.reply("You have to bet at least 1 wish. Your favorite pokemon has been decomposed as a punishment.");
             return;
         }
 
         if (wishesOnRed + wishesOnBlack > users[id].wishes)
         {
-            event.reply("You don't have enough wishes.");
+            event.reply("You don't have enough wishes. Your favorite pokemon has been decomposed as a punishment.");
             return;
         }
 
@@ -561,6 +566,10 @@ namespace poke {
             } else {
                 result = "black";
             }
+        }
+
+        if (result.empty()) {
+            result = "green";
         }
 
         int winnings = 0;
