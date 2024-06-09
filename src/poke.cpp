@@ -511,8 +511,8 @@ namespace poke {
         uint64_t id = event.command.get_issuing_user().id;
         CheckAndCreateUser(id);
 
-        int wishesOnRed = std::stoi(std::get<std::string>(event.get_parameter("wishes_on_red")));
-        int wishesOnBlack = std::stoi(std::get<std::string>(event.get_parameter("wishes_on_black")));
+        int wishesOnRed = std::get<int64_t>(event.get_parameter("wishes_on_red"));
+        int wishesOnBlack = std::get<int64_t>(event.get_parameter("wishes_on_black"));
 
         if (wishesOnRed < 0 || wishesOnBlack < 0)
         {
