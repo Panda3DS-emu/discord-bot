@@ -32,4 +32,5 @@ namespace commands {
     void Favorite(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Banner(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Leaderboard(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void Roulette(dpp::cluster& bot, const dpp::slashcommand_t& event);
 }

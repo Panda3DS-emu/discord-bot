@@ -1,6 +1,7 @@
 #include "poke.hpp"
 #include "colors.h"
 #include "dispatcher.h"
+#include "message.h"
 #include "toml.hpp"
 #include <filesystem>
 #include <mutex>
@@ -240,6 +241,7 @@ namespace poke {
             int roll1 = (rand() % 920) + 1;
             int roll2 = (rand() % 920) + 1;
             bool shiny = (rand() % 128) == 0;
+            bool lucky = (rand() % 40) == 0;
             bool legendary = false;
             int roll;
 
@@ -297,6 +299,8 @@ namespace poke {
                 }
             }
 
+            std::string footer;
+
             if (!found)
             {
                 Pokemon pokemon;
@@ -305,7 +309,7 @@ namespace poke {
                 users[id].pokemon.push_back(pokemon);
             } else {
                 if (shiny) {
-                    embed.set_footer("You already have this pokemon as a non-shiny, so your shiny variant decomposed into 1 wish.", "");
+                    footer += "You already have this pokemon as a non-shiny, so your non-shiny variant decomposed into 1 wish.\n";
                     users[id].wishes++;
                     
                     for (auto& pokemon : users[id].pokemon)
@@ -316,18 +320,26 @@ namespace poke {
                             break;
                         }
                     }
-                }
-
-                bool decompose = (rand() % 3) == 0;
-
-                if (decompose)
-                {
-                    embed.set_footer("You already have this pokemon so it decomposed into 1 wish.", "");
-                    users[id].wishes++;
                 } else {
-                    embed.set_footer("You already have this pokemon so it decomposed.", "");
+                    bool decompose = (rand() % 3) == 0;
+
+                    if (decompose)
+                    {
+                        footer += "You already have this pokemon so it decomposed into 1 wish.\n";
+                        users[id].wishes++;
+                    } else {
+                        footer += "You already have this pokemon so it decomposed.\n";
+                    }
                 }
             }
+
+            if (lucky)
+            {
+                footer += "Today is your lucky day! At a 1/40 chance you got 5 free wishes!\n";
+                users[id].wishes += 5;
+            }
+
+            embed.set_footer(footer, "");
 
             if (roll == bannerPokemon)
             {
@@ -489,6 +501,95 @@ namespace poke {
         }
 
         embed.set_description(description);
+
+        event.reply(dpp::message(event.command.channel_id, embed));
+    }
+
+    void Roulette(const dpp::slashcommand_t& event)
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        uint64_t id = event.command.get_issuing_user().id;
+        CheckAndCreateUser(id);
+
+        int wishesOnRed = std::stoi(std::get<std::string>(event.get_parameter("wishesOnRed")));
+        int wishesOnBlack = std::stoi(std::get<std::string>(event.get_parameter("wishesOnBlack")));
+
+        if (wishesOnRed < 0 || wishesOnBlack < 0)
+        {
+            event.reply("You can't bet negative wishes.");
+            return;
+        }
+
+        if (wishesOnRed + wishesOnBlack > users[id].wishes)
+        {
+            event.reply("You don't have enough wishes.");
+            return;
+        }
+
+        if (wishesOnRed + wishesOnBlack > 20) {
+            event.reply("You can't bet more than 20 wishes. No martingale system for you!");
+            return;
+        }
+
+        users[id].wishes -= wishesOnRed + wishesOnBlack;
+
+        int roll = rand() % 37;
+        bool even = roll % 2 == 0;
+        std::string result;
+
+        if (roll >= 1 && roll <= 10) {
+            if (even) {
+                result = "black";
+            } else {
+                result = "red";
+            }
+        } else if (roll >= 11 && roll <= 18) {
+            if (even) {
+                result = "red";
+            } else {
+                result = "black";
+            }
+        } else if (roll >= 19 && roll <= 28) {
+            if (even) {
+                result = "black";
+            } else {
+                result = "red";
+            }
+        } else if (roll != 0) {
+            if (even) {
+                result = "red";
+            } else {
+                result = "black";
+            }
+        }
+
+        int winnings = 0;
+
+        if (result == "red") {
+            winnings = wishesOnRed * 2;
+        } else if (result == "black") {
+            winnings = wishesOnBlack * 2;
+        }
+
+        users[id].wishes += winnings;
+
+        std::ofstream file(getPath(id));
+        toml::table table;
+        table["wishes"] = users[id].wishes;
+        table["daily"] = users[id].daily;
+        table["pokemon"] = users[id].pokemon;
+        table["pity"] = users[id].pity;
+        file << toml::value(table);
+
+        dpp::embed embed = dpp::embed()
+            .set_title("Roulette")
+            .set_color(0x00FF00);
+
+        if (winnings > 0) {
+            embed.set_description("The roulette landed on " + std::to_string(roll) + " (" + result + "). You won " + std::to_string(winnings) + " wishes.");
+        } else {
+            embed.set_description("The roulette landed on " + std::to_string(roll) + " (" + result + "). You lost " + std::to_string(wishesOnRed + wishesOnBlack) + " wishes.");
+        }
 
         event.reply(dpp::message(event.command.channel_id, embed));
     }

@@ -308,4 +308,8 @@ namespace commands {
         poke::Leaderboard(event);
     }
 
+    void Roulette(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::Roulette(event);
+    }
+
 }

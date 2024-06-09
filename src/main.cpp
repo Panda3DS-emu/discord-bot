@@ -238,6 +238,16 @@ Command botCommands[] = {
         .function = commands::Leaderboard,
         .adminOnly = false,
         .options = {}
+    },
+    {
+        .name = "roulette",
+        .description = "Bet wishes on the roulette. 18 red slots and 18 black slots and 1 green slot",
+        .function = commands::Roulette,
+        .adminOnly = false,
+        .options = {
+            dpp::command_option(dpp::co_integer, "wishesOnRed", "The number of wishes to bet on red", true),
+            dpp::command_option(dpp::co_integer, "wishesOnBlack", "The number of wishes to bet on black", true),
+        }
     }
 };
 
