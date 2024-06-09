@@ -511,8 +511,8 @@ namespace poke {
         uint64_t id = event.command.get_issuing_user().id;
         CheckAndCreateUser(id);
 
-        int wishesOnRed = std::stoi(std::get<std::string>(event.get_parameter("wishesOnRed")));
-        int wishesOnBlack = std::stoi(std::get<std::string>(event.get_parameter("wishesOnBlack")));
+        int wishesOnRed = std::stoi(std::get<std::string>(event.get_parameter("wishes_on_red")));
+        int wishesOnBlack = std::stoi(std::get<std::string>(event.get_parameter("wishes_on_black")));
 
         if (wishesOnRed < 0 || wishesOnBlack < 0)
         {
@@ -582,7 +582,7 @@ namespace poke {
         file << toml::value(table);
 
         dpp::embed embed = dpp::embed()
-            .set_title("Roulette")
+            .set_title("Roulette 🎰")
             .set_color(0x00FF00);
 
         if (winnings > 0) {

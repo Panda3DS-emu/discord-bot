@@ -245,8 +245,8 @@ Command botCommands[] = {
         .function = commands::Roulette,
         .adminOnly = false,
         .options = {
-            dpp::command_option(dpp::co_integer, "wishesOnRed", "The number of wishes to bet on red", true),
-            dpp::command_option(dpp::co_integer, "wishesOnBlack", "The number of wishes to bet on black", true),
+            dpp::command_option(dpp::co_integer, "wishes_on_red", "The number of wishes to bet on red", true),
+            dpp::command_option(dpp::co_integer, "wishes_on_black", "The number of wishes to bet on black", true),
         }
     }
 };
