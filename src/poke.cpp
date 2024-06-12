@@ -1193,7 +1193,7 @@ namespace poke {
         CheckAndCreateUser(id);
 
         int wishes = users[id].wishes;
-        event.reply("You have " + std::to_string(wishes) + " wishes.");
+        event.reply("You have " + std::to_string(wishes) + " wishes. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
     }
 
     void Wish(const dpp::slashcommand_t& event)
@@ -1207,7 +1207,7 @@ namespace poke {
         
         if (wishes == 0)
         {
-            event.reply("You have no wishes left.");
+            event.reply("You have no wishes left. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
         } else {
             int roll1 = (rand() % 920) + 1;
             int roll2 = (rand() % 920) + 1;
