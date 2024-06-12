@@ -1126,7 +1126,7 @@ namespace poke {
                 }
 
                 users[std::stoull(id)].wishes += newWishes;
-                users[std::stoull(id)].daily = time(nullptr) + (diff % interval);
+                users[std::stoull(id)].daily = daily + (diff / interval) * interval;
             }
 
             toml::table table;
@@ -1193,10 +1193,7 @@ namespace poke {
         CheckAndCreateUser(id);
 
         int wishes = users[id].wishes;
-        time_t timeUntil;
-        auto diff = time(nullptr) - users[id].daily;
-        timeUntil = diff % (86400 / 4);
-        event.reply("You have " + std::to_string(wishes) + " wishes. You get 5 more wishes <t:" + std::to_string(time(nullptr) + diff) + ":R>.");
+        event.reply("You have " + std::to_string(wishes) + " wishes. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
     }
 
     void Wish(const dpp::slashcommand_t& event)
@@ -1213,7 +1210,7 @@ namespace poke {
             time_t timeUntil;
             auto diff = time(nullptr) - users[id].daily;
             timeUntil = diff % (86400 / 4);
-            event.reply("You have no wishes left. You get 5 more wishes <t:" + std::to_string(time(nullptr) + diff) + ":R>.");
+            event.reply("You have no wishes left. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
         } else {
             int roll1 = (rand() % 920) + 1;
             int roll2 = (rand() % 920) + 1;
