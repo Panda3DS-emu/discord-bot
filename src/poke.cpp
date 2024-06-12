@@ -89,6 +89,7 @@ namespace poke {
         int wishes;
         std::vector<Pokemon> pokemon;
         time_t daily;
+        time_t autoclaim;
         int pity;
     };
 
@@ -167,11 +168,37 @@ namespace poke {
 
         if (users.find(std::stoull(id)) != users.end())
         {
+            time_t now = time(nullptr);
+            time_t daily = users[std::stoull(id)].daily;
+
+            time_t diff = now - daily;
+            time_t interval = 86400 / 4;
+
+            if (diff >= interval)
+            {
+                int newWishes = (diff / interval) * 5;
+                if (newWishes > 30)
+                {
+                    newWishes = 30;
+                }
+
+                users[std::stoull(id)].wishes += newWishes;
+                users[std::stoull(id)].daily = time(nullptr) + (diff % interval);
+            }
+
+            toml::table table;
+            table["wishes"] = users[std::stoull(id)].wishes;
+            table["daily"] = users[std::stoull(id)].daily;
+            table["pokemon"] = users[std::stoull(id)].pokemon;
+            table["pity"] = users[std::stoull(id)].pity;
+
+            std::ofstream file(getPath(nid));
+            file << toml::value(table);
             return;
         } else {
             User user;
             user.wishes = 10;
-            user.daily = 0;
+            user.daily = time(nullptr);
             user.pokemon = {};
             user.pity = 0;
             users[std::stoull(id)] = user;
@@ -189,30 +216,31 @@ namespace poke {
 
     void Daily(const dpp::slashcommand_t& event)
     {
-        std::lock_guard<std::mutex> lock(mtx);
-        uint64_t id = event.command.get_issuing_user().id;
-        CheckAndCreateUser(id);
+        event.reply("/daily has been replaced with an automatic claiming system. Every 6 hours five wishes are added to your account, up to 30 wishes. You can check your wishes with /wishes.");
+        // std::lock_guard<std::mutex> lock(mtx);
+        // uint64_t id = event.command.get_issuing_user().id;
+        // CheckAndCreateUser(id);
 
-        time_t now = time(nullptr);
-        time_t daily = users[id].daily;
+        // time_t now = time(nullptr);
+        // time_t daily = users[id].daily;
 
-        if (now - daily < 86400 / 4)
-        {
-            event.reply("You already claimed your daily reward. Next claim <t:" + std::to_string(daily + 86400 / 4) + ":R>.");
-        } else {
-            users[id].daily = now;
-            users[id].wishes += 5;
+        // if (now - daily < 86400 / 4)
+        // {
+        //     event.reply("You already claimed your daily reward. Next claim <t:" + std::to_string(daily + 86400 / 4) + ":R>.");
+        // } else {
+        //     users[id].daily = now;
+        //     users[id].wishes += 5;
 
-            std::ofstream file(getPath(id));
-            toml::table table;
-            table["wishes"] = users[id].wishes;
-            table["daily"] = users[id].daily;
-            table["pokemon"] = users[id].pokemon;
-            table["pity"] = users[id].pity;
-            file << toml::value(table);
+        //     std::ofstream file(getPath(id));
+        //     toml::table table;
+        //     table["wishes"] = users[id].wishes;
+        //     table["daily"] = users[id].daily;
+        //     table["pokemon"] = users[id].pokemon;
+        //     table["pity"] = users[id].pity;
+        //     file << toml::value(table);
 
-            event.reply("You claimed your daily reward. You now have " + std::to_string(users[id].wishes) + " wishes. Next daily reset <t:" + std::to_string(now + 86400 / 4) + ":R>.");
-        }
+        //     event.reply("You claimed your daily reward. You now have " + std::to_string(users[id].wishes) + " wishes. Next daily reset <t:" + std::to_string(now + 86400 / 4) + ":R>.");
+        // }
     }
 
     void Wishes(const dpp::slashcommand_t& event)
@@ -242,6 +270,7 @@ namespace poke {
             int roll2 = (rand() % 920) + 1;
             bool shiny = (rand() % 128) == 0;
             bool lucky = (rand() % 40) == 0;
+            bool luckier = (rand() % 256) == 0;
             bool legendary = false;
             int roll;
 
@@ -337,6 +366,12 @@ namespace poke {
             {
                 footer += "Today is your lucky day! At a 1/40 chance you got 5 free wishes!\n";
                 users[id].wishes += 5;
+            }
+
+            if (luckier)
+            {
+                footer += "Today is your lucky day! At a 1/256 chance you got 20 free wishes!\n";
+                users[id].wishes += 20;
             }
 
             embed.set_footer(footer, "");
