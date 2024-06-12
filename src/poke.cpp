@@ -14,6 +14,7 @@ int totalLosses = 0;
 namespace poke {
 
     std::vector<std::string> names = {
+        "BIG DUMMY",
         "bulbasaur", 
         "ivysaur", 
         "venusaur", 
@@ -1213,6 +1214,7 @@ namespace poke {
             bool shiny = (rand() % 128) == 0;
             bool lucky = (rand() % 40) == 0;
             bool luckier = (rand() % 256) == 0;
+            bool luckiest = (rand() % 1024) == 0;
             bool legendary = false;
             int roll;
 
@@ -1259,7 +1261,12 @@ namespace poke {
 
             bool rude = (rand() % 25) == 0;
             if (rude) {
-                name = "fucking " + name;
+                int r = rand() % 3;
+                switch (r) {
+                    case 0: name = "fucking " + name; break;
+                    case 1: name = "god damned " + name; break;
+                    case 2: name = "useless " + name; break;
+                }
             }
 
             if (legendary)
@@ -1318,14 +1325,20 @@ namespace poke {
 
             if (lucky)
             {
-                footer += "Today is your lucky day! At a 1/40 chance you got 5 free wishes!\n";
+                footer += "Today is your lucky day! At a 2.5% chance you got 5 free wishes!\n";
                 users[id].wishes += 5;
             }
 
             if (luckier)
             {
-                footer += "Today is your lucky day! At a 1/256 chance you got 20 free wishes!\n";
+                footer += "Today is your lucky day! At a 0.4% chance you got 20 free wishes!\n";
                 users[id].wishes += 20;
+            }
+
+            if (luckiest)
+            {
+                footer += "HOLY MOLY! Today is your luckiest day! At a 0.1% chance you got 50 free wishes!\n";
+                users[id].wishes += 50;
             }
 
             embed.set_footer(footer, "");
@@ -1601,7 +1614,12 @@ namespace poke {
             totalLosses += (wishesOnRed + wishesOnBlack) - winnings;
         }
 
-        embed.set_footer("On this server, " + std::to_string(wishesGambled) + " wishes have been gambled, with a total of " + std::to_string(totalWinnings) + " wishes won and " + std::to_string(totalLosses) + " wishes lost.", "");
+        float fchance = (float)totalWinnings / (float)wishesGambled * 100.0f;
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(2) << fchance;
+        std::string chance = stream.str();
+
+        embed.set_footer("On this server, " + std::to_string(wishesGambled) + " wishes have been gambled, with a total of " + std::to_string(totalWinnings) + " wishes won and " + std::to_string(totalLosses) + " wishes lost. Expected win rate: ~48.64%. Actual win rate: ~" + chance + "%.", "");
 
         event.reply(dpp::message(event.command.channel_id, embed));
 
