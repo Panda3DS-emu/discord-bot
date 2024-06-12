@@ -7,6 +7,10 @@
 #include <mutex>
 #include <unordered_map>
 
+int wishesGambled = 0;
+int totalWinnings = 0;
+int totalLosses = 0;
+
 namespace poke {
 
     std::vector<int> legendaries = {
@@ -147,6 +151,21 @@ namespace poke {
             std::ofstream file("banner.toml");
             file << toml::value(table);
         }
+
+        if (std::filesystem::exists("stats.toml")) {
+            auto table = toml::parse("stats.toml");
+            totalWinnings = toml::get<int>(table["totalWinnings"]);
+            totalLosses = toml::get<int>(table["totalLosses"]);
+            wishesGambled = toml::get<int>(table["wishesGambled"]);
+        } else {
+            toml::table table;
+            table["wishesGambled"] = wishesGambled;
+            table["totalWinnings"] = totalWinnings;
+            table["totalLosses"] = totalLosses;
+
+            std::ofstream file("stats.toml");
+            file << toml::value(table);
+        }
     }
 
     void CheckAndCreateUser(uint64_t nid)
@@ -216,7 +235,7 @@ namespace poke {
 
     void Daily(const dpp::slashcommand_t& event)
     {
-        event.reply("/daily has been replaced with an automatic claiming system. Every 6 hours five wishes are added to your account, up to 30 wishes. You can check your wishes with /wishes.");
+        event.reply("/daily has been replaced with an automatic claiming system. Every 6 hours five wishes are added to your account, up to 30 wishes since your last interaction with the bot. You can check your wishes with /wishes.");
         // std::lock_guard<std::mutex> lock(mtx);
         // uint64_t id = event.command.get_issuing_user().id;
         // CheckAndCreateUser(id);
@@ -635,7 +654,23 @@ namespace poke {
             embed.set_description("The roulette landed on " + std::to_string(roll) + " (" + result + "). You lost " + std::to_string(wishesOnRed + wishesOnBlack) + " wishes.");
         }
 
+        wishesGambled += wishesOnRed + wishesOnBlack;
+        if (winnings > wishesOnRed + wishesOnBlack) {
+            totalWinnings += winnings - (wishesOnRed + wishesOnBlack);
+        } else if (winnings < wishesOnRed + wishesOnBlack) {
+            totalLosses += (wishesOnRed + wishesOnBlack) - winnings;
+        }
+
+        embed.set_footer("On this server, " + std::to_string(wishesGambled) + " wishes have been gambled, with a total of " + std::to_string(totalWinnings) + " wishes won and " + std::to_string(totalLosses) + " wishes lost.", "");
+
         event.reply(dpp::message(event.command.channel_id, embed));
+
+        std::ofstream statsFile("stats.toml");
+        toml::table statsTable;
+        statsTable["wishesGambled"] = wishesGambled;
+        statsTable["totalWinnings"] = totalWinnings;
+        statsTable["totalLosses"] = totalLosses;
+        statsFile << toml::value(statsTable);
     }
 
 }
