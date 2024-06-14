@@ -1264,11 +1264,10 @@ namespace poke {
 
             bool rude = (rand() % 25) == 0;
             if (rude) {
-                int r = rand() % 3;
+                int r = rand() % 2;
                 switch (r) {
-                    case 0: name = "fucking " + name; break;
-                    case 1: name = "god damned " + name; break;
-                    case 2: name = "useless " + name; break;
+                    case 0: name = "silly " + name + " :3"; break;
+                    case 1: name = "useless " + name; break;
                 }
             }
 
