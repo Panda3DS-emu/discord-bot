@@ -2,9 +2,11 @@
 #include "admin.hpp"
 #include "appcommand.h"
 #include "commands.hpp"
+#include "dispatcher.h"
 #include "macros.hpp"
 #include "ai.hpp"
 #include "poke.hpp"
+#include "restresults.h"
 
 constexpr bool clearCommands = false;
 
@@ -300,6 +302,13 @@ int main() {
                 }
                 bot.global_command_create(slashCommand);
             }
+        }
+    });
+
+    bot.on_button_click([](const dpp::button_click_t& event) {
+        std::string id = event.custom_id;
+
+        if (id.find("page_next_") == 0) {
         }
     });
 

@@ -1019,6 +1019,7 @@ namespace poke {
         time_t daily;
         time_t autoclaim;
         int pity;
+        bool nextLegendary = false;
     };
 
     std::unordered_map<uint64_t, User> users;
@@ -1216,6 +1217,7 @@ namespace poke {
             int roll2 = (rand() % 920) + 1;
             bool shiny = (rand() % 128) == 0;
             bool lucky = (rand() % 40) == 0;
+            bool lucky2 = (rand() % 128) == 0;
             bool luckier = (rand() % 256) == 0;
             bool luckiest = (rand() % 1024) == 0;
             bool legendary = false;
@@ -1245,6 +1247,11 @@ namespace poke {
                 users[id].pity = 0;
                 roll = bannerPokemon;
                 legendary = true;
+            } else if (users[id].nextLegendary) {
+                users[id].nextLegendary = false;
+                roll = legendaries[rand() % legendaries.size()];
+                legendary = true;
+                shiny = (rand() % 2) == 0;
             }
             
             std::string url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + std::to_string(roll) + ".gif";
@@ -1301,7 +1308,7 @@ namespace poke {
                 users[id].pokemon.push_back(pokemon);
             } else {
                 if (shiny) {
-                    footer += "You already have this pokemon as a non-shiny, so your non-shiny variant decomposed into 1 wish.\n";
+                    footer += "You already have this pokemon as a non-shiny, so your non-shiny variant was freed back into its natural habitat. You got 1 wish in return.\n";
                     users[id].wishes++;
                     
                     for (auto& pokemon : users[id].pokemon)
@@ -1317,30 +1324,39 @@ namespace poke {
 
                     if (decompose)
                     {
-                        footer += "You already have this pokemon so it decomposed into 1 wish.\n";
+                        footer += "You already have this pokemon so it was released back into its natural habitat. On your way back, you found 1 wish.\n";
                         users[id].wishes++;
                     } else {
-                        footer += "You already have this pokemon so it decomposed.\n";
+                        footer += "You already have this pokemon so it was released back into its natural habitat.\n";
                     }
                 }
             }
 
-            if (lucky)
-            {
-                footer += "Today is your lucky day! At a 2.5% chance you got 5 free wishes!\n";
-                users[id].wishes += 5;
-            }
+            if (!leaderboard.empty()) {
+                if (leaderboard[0].first != id) {
+                    if (lucky)
+                    {
+                        footer += "Today is your lucky day! At a 2.5% chance you got 5 free wishes!\n";
+                        users[id].wishes += 5;
+                    }
 
-            if (luckier)
-            {
-                footer += "Today is your lucky day! At a 0.4% chance you got 20 free wishes!\n";
-                users[id].wishes += 20;
-            }
+                    if (luckier)
+                    {
+                        footer += "Today is your lucky day! At a 0.4% chance you got 20 free wishes!\n";
+                        users[id].wishes += 20;
+                    }
 
-            if (luckiest)
-            {
-                footer += "HOLY MOLY! Today is your luckiest day! At a 0.1% chance you got 50 free wishes!\n";
-                users[id].wishes += 50;
+                    if (luckiest)
+                    {
+                        footer += "HOLY MOLY! Today is your luckiest day! At a 0.1% chance you got 50 free wishes!\n";
+                        users[id].wishes += 50;
+                    }
+
+                    if (lucky2) {
+                        footer += "Hold on a second... this pokemon is holding a lucky charm... your next roll is going to be legendary and have a 50% chance of being shiny...\n";
+                        users[id].nextLegendary = true;
+                    }
+                }
             }
 
             embed.set_footer(footer, "");
@@ -1364,12 +1380,7 @@ namespace poke {
         }
     }
 
-    void List(const dpp::slashcommand_t& event)
-    {
-        std::lock_guard<std::mutex> lock(mtx);
-        uint64_t id = event.command.get_issuing_user().id;
-        CheckAndCreateUser(id);
-
+    dpp::message ListPage(int page, uint64_t channel_id, uint64_t id) {
         dpp::embed embed = dpp::embed()
             .set_title("You have " + std::to_string(users[id].pokemon.size()) + " Pokemon.")
             .set_color(0x00FF00);
@@ -1380,8 +1391,14 @@ namespace poke {
         }
 
         std::string description = "";
-        for (auto& pokemon : users[id].pokemon)
+        for (int index = page * 15; index < page * 15 + 15; index++)
         {
+            if (index >= names.size())
+            {
+                break;
+            }
+
+            auto pokemon = users[id].pokemon[index];
             std::string name = "FATAL ERROR";
             if (std::stoi(pokemon[ID]) < names.size()) {
                 name = names[std::stoi(pokemon[ID])];
@@ -1391,8 +1408,26 @@ namespace poke {
         }
 
         embed.set_description(description);
+        embed.set_footer("Page " + std::to_string(page + 1) + " of " + std::to_string(users[id].pokemon.size() / 15 + 1), "");
 
-        event.reply(dpp::message(event.command.channel_id, embed));
+        dpp::message msg(channel_id, embed);
+        msg.add_component(
+            dpp::component().add_component(
+                dpp::component().set_emoji("⬅️").set_label("Previous").set_style(dpp::cos_primary).set_id("page_prev_0")
+            ).add_component(
+                dpp::component().set_emoji("➡️").set_label("Next").set_style(dpp::cos_primary).set_id("page_next_0")
+            )
+        );
+        return msg;
+    }
+
+    void List(const dpp::slashcommand_t& event)
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        uint64_t id = event.command.get_issuing_user().id;
+        CheckAndCreateUser(id);
+
+        event.reply(ListPage(0, event.command.channel_id, id));
     }
 
     void Favorite(const dpp::slashcommand_t& event)

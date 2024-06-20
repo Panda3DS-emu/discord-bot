@@ -13,5 +13,6 @@ namespace poke {
     void Banner(const dpp::slashcommand_t& event);
     void Leaderboard(const dpp::slashcommand_t& event);
     void Roulette(const dpp::slashcommand_t& event);
+    dpp::message ListPage(int page, uint64_t channel_id, uint64_t id);
 
 }
