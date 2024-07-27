@@ -123,7 +123,7 @@ namespace artificial {
                     convoFunny.AddUserData("HUMAN: " + prompt + "\n");
                     lock.unlock();
                     liboai::Response response = oai.ChatCompletion->create(
-                        "gpt-3.5-turbo", convoFunny
+                        "gpt-4o-mini", convoFunny
                     );
                     lock.lock();
                     convoFunny.Update(response);
@@ -138,7 +138,7 @@ namespace artificial {
                     convo.AddUserData("HUMAN: " + prompt + "\n");
                     lock.unlock();
                     liboai::Response response = oai.ChatCompletion->create(
-                        "gpt-3.5-turbo", convo
+                        "gpt-4o-mini", convo
                     );
                     lock.lock();
                     convo.Update(response);
