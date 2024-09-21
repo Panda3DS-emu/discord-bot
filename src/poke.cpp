@@ -1406,9 +1406,16 @@ namespace poke {
 
         std::string newPokemon;
         for (int i = pokemonBefore; i < pokemonAfter; i++) {
-            newPokemon += "#" + users[id].pokemon[i][ID] + " ";
+            newPokemon += "#" + users[id].pokemon[i][ID];
+
+            if (i != pokemonAfter - 1) {
+                newPokemon += ", ";
+            }
         }
 
+        if (pokemonAfter == pokemonBefore) {
+            newPokemon = "no";
+        }
         event.reply("You wished " + std::to_string(requestedWishes) + " times and got " + newPokemon + " new pokemon.\nNew wish count: " + std::to_string(users[id].wishes));
     }
 
