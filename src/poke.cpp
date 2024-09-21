@@ -1382,6 +1382,11 @@ namespace poke {
     }
 
     void MultiWish(const dpp::slashcommand_t& event) {
+        if ((rand() % 40) == 0) {
+            event.reply("You tried to wish multiple times but the system broke and you lost all your wishes. You should have wished one by one.");
+            return;
+        }
+
         uint64_t id = event.command.get_issuing_user().id;
 
         std::lock_guard<std::mutex> lock(mtx);
@@ -1393,7 +1398,7 @@ namespace poke {
         int requestedWishes = std::get<int64_t>(event.get_parameter("wishes"));
 
         if (requestedWishes > wishes) {
-            event.reply("You don't have enough wishes.");
+            event.edit_original_response(std::string("You don't have enough wishes. For trying to cheat the system I ate your favorite pokemon: ") + names[std::stoull(users[id].pokemon[0][ID])] + ". That's right I ate it.");
             return;
         }
 
@@ -1531,6 +1536,11 @@ namespace poke {
 
     void Leaderboard(const dpp::slashcommand_t &event)
     {
+        if ((rand() % 1024) == 0) {
+            event.reply("Hm... I think I'll keep the leaderboard to myself today. You can try again tomorrow.");
+            return;
+        }
+
         std::lock_guard<std::mutex> lock(mtx);
         uint64_t id = event.command.get_issuing_user().id;
         CheckAndCreateUser(id);
