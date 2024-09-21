@@ -1385,6 +1385,7 @@ namespace poke {
         uint64_t id = event.command.get_issuing_user().id;
 
         std::lock_guard<std::mutex> lock(mtx);
+        event.reply(dpp::ir_deferred_channel_message_with_source, "Wishing...");
         CheckAndCreateUser(id);
 
         int wishes = users[id].wishes;
@@ -1416,7 +1417,7 @@ namespace poke {
         if (pokemonAfter == pokemonBefore) {
             newPokemon = "no";
         }
-        event.reply("You wished " + std::to_string(requestedWishes) + " times and got " + newPokemon + " new pokemon.\nNew wish count: " + std::to_string(users[id].wishes));
+        event.edit_original_response("You wished " + std::to_string(requestedWishes) + " times and got " + newPokemon + " new pokemon.\nNew wish count: " + std::to_string(users[id].wishes));
     }
 
     dpp::message ListPage(int page, uint64_t channel_id, uint64_t id) {
