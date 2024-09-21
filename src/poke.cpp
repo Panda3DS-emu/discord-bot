@@ -956,7 +956,6 @@ namespace poke {
         706,  // Goodra
         784,  // Kommo-o
         883,  // Dragapult
-        997,  // Baxcalibur
 
         3,    // Venusaur
         6,    // Charizard
@@ -1197,9 +1196,9 @@ namespace poke {
         event.reply("You have " + std::to_string(wishes) + " wishes. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
     }
 
-    void Wish(const dpp::slashcommand_t& event)
+    void Wish(const dpp::slashcommand_t& event, bool isMultiwishing)
     {
-        std::lock_guard<std::mutex> lock(mtx);
+        if (!isMultiwishing) std::lock_guard<std::mutex> lock(mtx);
         leaderboardInvalidated = true;
         uint64_t id = event.command.get_issuing_user().id;
         CheckAndCreateUser(id);
@@ -1278,13 +1277,15 @@ namespace poke {
                 }
             }
 
-            if (legendary)
-            {
-                embed.set_title(shinyText + "WOAH! You got a " + name + "! ");
-                embed.set_color(dpp::colors::orange);
-            } else {
-                embed.set_title(shinyText + "You got a " + name + ".");
-                embed.set_color(dpp::colors::green);
+            if (!isMultiwishing) {
+                if (legendary)
+                {
+                    embed.set_title(shinyText + "WOAH! You got a " + name + "! ");
+                    embed.set_color(dpp::colors::orange);
+                } else {
+                    embed.set_title(shinyText + "You got a " + name + ".");
+                    embed.set_color(dpp::colors::green);
+                }
             }
 
             bool found = false;
@@ -1368,7 +1369,7 @@ namespace poke {
                 users[id].pity++;
             }
 
-            event.reply(dpp::message(event.command.channel_id, embed));
+            if (!isMultiwishing) event.reply(dpp::message(event.command.channel_id, embed));
 
             std::ofstream file(getPath(id));
             toml::table table;
@@ -1378,6 +1379,37 @@ namespace poke {
             table["pity"] = users[id].pity;
             file << toml::value(table);
         }
+    }
+
+    void MultiWish(const dpp::slashcommand_t& event) {
+        uint64_t id = event.command.get_issuing_user().id;
+
+        std::lock_guard<std::mutex> lock(mtx);
+        CheckAndCreateUser(id);
+
+        int wishes = users[id].wishes;
+
+        int requestedWishes = std::get<int64_t>(event.get_parameter("wishes"));
+
+        if (requestedWishes > wishes) {
+            event.reply("You don't have enough wishes.");
+            return;
+        }
+
+        int pokemonBefore = users[id].pokemon.size();
+
+        for (int i = 0; i < requestedWishes; i++) {
+            Wish(event, true);
+        }
+
+        int pokemonAfter = users[id].pokemon.size();
+
+        std::string newPokemon;
+        for (int i = pokemonBefore; i < pokemonAfter; i++) {
+            newPokemon += "#" + users[id].pokemon[i][ID] + " ";
+        }
+
+        event.reply("You wished " + std::to_string(requestedWishes) + " times and got " + newPokemon + " new pokemon.\nNew wish count: " + std::to_string(users[id].wishes));
     }
 
     dpp::message ListPage(int page, uint64_t channel_id, uint64_t id) {

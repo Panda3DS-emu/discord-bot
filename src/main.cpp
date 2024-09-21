@@ -205,6 +205,15 @@ Command botCommands[] = {
         .options = {}
     },
     {
+        .name = "multiwish",
+        .description = "Make many wishes",
+        .function = commands::MultiWish,
+        .adminOnly = false,
+        .options = {
+            dpp::command_option(dpp::co_integer, "wishes", "The number of wishes", true),
+        }
+    },
+    {
         .name = "daily",
         .description = "Get your daily wishes",
         .function = commands::Daily,

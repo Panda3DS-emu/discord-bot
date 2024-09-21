@@ -285,7 +285,11 @@ namespace commands {
     }
 
     void Wish(dpp::cluster &bot, const dpp::slashcommand_t &event) {
-        poke::Wish(event);
+        poke::Wish(event, false);
+    }
+
+    void MultiWish(dpp::cluster &bot, const dpp::slashcommand_t &event) {
+        poke::MultiWish(event);
     }
 
     void Daily(dpp::cluster &bot, const dpp::slashcommand_t &event) {

@@ -27,6 +27,7 @@ namespace commands {
     void ClearContext(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Wishes(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Wish(dpp::cluster& bot, const dpp::slashcommand_t& event);
+    void MultiWish(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Daily(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void List(dpp::cluster& bot, const dpp::slashcommand_t& event);
     void Favorite(dpp::cluster& bot, const dpp::slashcommand_t& event);
