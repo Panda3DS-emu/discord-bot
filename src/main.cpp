@@ -318,6 +318,13 @@ int main() {
         std::string id = event.custom_id;
 
         if (id.find("page_next_") == 0) {
+            poke::ListNextPage(event);
+            return;
+        }
+
+        if (id.find("page_prev_") == 0) {
+            poke::ListPrevPage(event);
+            return;
         }
     });
 

@@ -1438,7 +1438,7 @@ namespace poke {
         std::string description = "";
         for (int index = page * 15; index < page * 15 + 15; index++)
         {
-            if (index >= names.size())
+            if (index >= users[id].pokemon.size())
             {
                 break;
             }
@@ -1458,9 +1458,9 @@ namespace poke {
         dpp::message msg(channel_id, embed);
         msg.add_component(
             dpp::component().add_component(
-                dpp::component().set_emoji("⬅️").set_label("Previous").set_style(dpp::cos_primary).set_id("page_prev_0")
+                dpp::component().set_emoji("⬅️").set_label("Previous").set_style(dpp::cos_primary).set_id("page_prev_" + std::to_string(id) + "_" + std::to_string(page))
             ).add_component(
-                dpp::component().set_emoji("➡️").set_label("Next").set_style(dpp::cos_primary).set_id("page_next_0")
+                dpp::component().set_emoji("➡️").set_label("Next").set_style(dpp::cos_primary).set_id("page_next_" + std::to_string(id) + "_" + std::to_string(page))
             )
         );
         return msg;
@@ -1473,6 +1473,48 @@ namespace poke {
         CheckAndCreateUser(id);
 
         event.reply(ListPage(0, event.command.channel_id, id));
+    }
+
+    void ListNextPage(const dpp::button_click_t& event)
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+
+        constexpr int offset = 10; // strlen("page_next_") == 10
+        std::string button_data = event.custom_id.substr(offset);
+        int page_offset = button_data.find('_');
+        if (page_offset != std::string::npos) {
+            uint64_t id = std::stoull(button_data);
+            int current_page = std::stoi(button_data.substr(page_offset + 1)); // + 1 to skip the "_" character
+            int next_page = current_page + 1;
+            if (current_page >= (users[id].pokemon.size() / 15))
+            {
+                // Roll over to the beginning
+                next_page = 0;
+            }
+
+            event.reply(dpp::ir_update_message, ListPage(next_page, event.command.channel_id, id));
+        }
+    }
+
+    void ListPrevPage(const dpp::button_click_t& event)
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+
+        constexpr int offset = 10; // strlen("page_prev_") == 10
+        std::string button_data = event.custom_id.substr(offset);
+        int page_offset = button_data.find('_');
+        if (page_offset != std::string::npos) {
+            uint64_t id = std::stoull(button_data);
+            int current_page = std::stoi(button_data.substr(page_offset + 1)); // + 1 to skip the "_" character
+            int previous_page = current_page - 1;
+            if (current_page == 0)
+            {
+                // Roll over to the end
+                previous_page = (users[id].pokemon.size() / 15);
+            }
+
+            event.reply(dpp::ir_update_message, ListPage(previous_page, event.command.channel_id, id));
+        }
     }
 
     void Favorite(const dpp::slashcommand_t& event)
