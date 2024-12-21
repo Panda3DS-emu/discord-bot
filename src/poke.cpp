@@ -1483,12 +1483,14 @@ namespace poke {
 
         constexpr int offset = 10; // strlen("page_next_") == 10
         int current_page = std::stoi(event.custom_id.substr(offset));
-        if (current_page >= (users[id].pokemon.size() / 15)) {
-            event.reply("You don't have that many pokemons. Consider getting more.");
-            return;
+        int next_page = current_page + 1;
+        if (current_page >= (users[id].pokemon.size() / 15))
+        {
+            // Roll over to the beginning
+            next_page = 0;
         }
 
-        event.reply(ListPage(current_page + 1, event.command.channel_id, id));
+        event.reply(ListPage(next_page, event.command.channel_id, id));
     }
 
     void ListPrevPage(const dpp::button_click_t& event)
@@ -1499,13 +1501,14 @@ namespace poke {
 
         constexpr int offset = 10; // strlen("page_prev_") == 10
         int current_page = std::stoi(event.custom_id.substr(offset));
+        int previous_page = current_page - 1;
         if (current_page == 0)
         {
-            event.reply("You are already at the beginning. Try to think about it better.");
-            return;
+            // Roll over to the end
+            previous_page = (users[id].pokemon.size() / 15);
         }
 
-        event.reply(ListPage(current_page - 1, event.command.channel_id, id));
+        event.reply(ListPage(previous_page, event.command.channel_id, id));
     }
 
     void Favorite(const dpp::slashcommand_t& event)
