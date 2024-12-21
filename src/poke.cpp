@@ -1458,9 +1458,9 @@ namespace poke {
         dpp::message msg(channel_id, embed);
         msg.add_component(
             dpp::component().add_component(
-                dpp::component().set_emoji("⬅️").set_label("Previous").set_style(dpp::cos_primary).set_id("page_prev_" + std::to_string(page))
+                dpp::component().set_emoji("⬅️").set_label("Previous").set_style(dpp::cos_primary).set_id("page_prev_" + std::to_string(id) + "_" + std::to_string(page))
             ).add_component(
-                dpp::component().set_emoji("➡️").set_label("Next").set_style(dpp::cos_primary).set_id("page_next_" + std::to_string(page))
+                dpp::component().set_emoji("➡️").set_label("Next").set_style(dpp::cos_primary).set_id("page_next_" + std::to_string(id) + "_" + std::to_string(page))
             )
         );
         return msg;
@@ -1478,37 +1478,43 @@ namespace poke {
     void ListNextPage(const dpp::button_click_t& event)
     {
         std::lock_guard<std::mutex> lock(mtx);
-        uint64_t id = event.command.get_issuing_user().id;
-        CheckAndCreateUser(id);
 
         constexpr int offset = 10; // strlen("page_next_") == 10
-        int current_page = std::stoi(event.custom_id.substr(offset));
-        int next_page = current_page + 1;
-        if (current_page >= (users[id].pokemon.size() / 15))
-        {
-            // Roll over to the beginning
-            next_page = 0;
-        }
+        std::string button_data = event.custom_id.substr(offset);
+        int page_offset = button_data.find('_');
+        if (page_offset != std::string::npos) {
+            uint64_t id = std::stoull(button_data);
+            int current_page = std::stoi(button_data.substr(page_offset + 1)); // + 1 to skip the "_" character
+            int next_page = current_page + 1;
+            if (current_page >= (users[id].pokemon.size() / 15))
+            {
+                // Roll over to the beginning
+                next_page = 0;
+            }
 
-        event.reply(ListPage(next_page, event.command.channel_id, id));
+            event.reply(dpp::ir_update_message, ListPage(next_page, event.command.channel_id, id));
+        }
     }
 
     void ListPrevPage(const dpp::button_click_t& event)
     {
         std::lock_guard<std::mutex> lock(mtx);
-        uint64_t id = event.command.get_issuing_user().id;
-        CheckAndCreateUser(id);
 
         constexpr int offset = 10; // strlen("page_prev_") == 10
-        int current_page = std::stoi(event.custom_id.substr(offset));
-        int previous_page = current_page - 1;
-        if (current_page == 0)
-        {
-            // Roll over to the end
-            previous_page = (users[id].pokemon.size() / 15);
-        }
+        std::string button_data = event.custom_id.substr(offset);
+        int page_offset = button_data.find('_');
+        if (page_offset != std::string::npos) {
+            uint64_t id = std::stoull(button_data);
+            int current_page = std::stoi(button_data.substr(page_offset + 1)); // + 1 to skip the "_" character
+            int previous_page = current_page - 1;
+            if (current_page == 0)
+            {
+                // Roll over to the end
+                previous_page = (users[id].pokemon.size() / 15);
+            }
 
-        event.reply(ListPage(previous_page, event.command.channel_id, id));
+            event.reply(dpp::ir_update_message, ListPage(previous_page, event.command.channel_id, id));
+        }
     }
 
     void Favorite(const dpp::slashcommand_t& event)
