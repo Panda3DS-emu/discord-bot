@@ -1624,13 +1624,29 @@ namespace poke {
 
         std::string description = "";
         int i = 1;
+        bool selfLeaderboard = false;
 
         for (auto& user : leaderboard)
         {
-            description += std::to_string(i) + ". <@" + std::to_string(user.first) + "> - " + std::to_string(user.second) + " points\n";
+            if (id == user.first)
+            {
+                selfLeaderboard = true;
+            }
+
+            if (i <= 10 || id == user.first)
+            {
+                // Add extra spacing for the ranking of the caller if not in top 10
+                if (i > 10)
+                {
+                    description += "\n";
+                }
+
+                description += std::to_string(i) + ". <@" + std::to_string(user.first) + "> - " + std::to_string(user.second) + " points\n";
+            }
+
             i++;
 
-            if (i > 10)
+            if (i > 10 && selfLeaderboard)
             {
                 break;
             }
