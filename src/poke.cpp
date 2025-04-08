@@ -940,6 +940,13 @@ namespace poke {
         "pawmot",
         "tandemaus",
         "maushold",
+        "921", "922", "923", "924", "925", "926", "927", "928", "929", "930",
+        "931", "932", "933", "934", "935", "936", "937", "938", "939", "940",
+        "941", "942", "943", "944", "945", "946", "947", "948", "949", "950",
+        "951", "952", "953", "954", "955", "956", "957", "958", "959", "960",
+        "961", "962", "963", "964", "965", "966", "967", "968", "969", "970",
+        "971", "972", "973", "974", "975", "976", "977", "978", "979", "980",
+        "981", "982", "983"
     };
 
     std::vector<int> legendaries = {
@@ -1258,7 +1265,7 @@ namespace poke {
                 shiny = (rand() % 2) == 0;
             }
             
-            std::string url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + std::to_string(roll) + ".gif";
+            std::string url = "https://raw.githubusercontent.com/KostaSaizo7/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + std::to_string(roll) + ".gif";
             dpp::embed embed = dpp::embed()
                 .set_image(url);
 
