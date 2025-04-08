@@ -935,6 +935,11 @@ namespace poke {
         "spidops", 
         "nymble", 
         "lokix", 
+        "pawmi",
+        "pawmo",
+        "pawmot",
+        "tandemaus",
+        "maushold",
     };
 
     std::vector<int> legendaries = {
@@ -1212,8 +1217,8 @@ namespace poke {
             timeUntil = diff % (86400 / 4);
             event.reply("You have no wishes left. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
         } else {
-            int roll1 = (rand() % 920) + 1;
-            int roll2 = (rand() % 920) + 1;
+            int roll1 = (rand() % names.size()) + 1;
+            int roll2 = (rand() % names.size()) + 1;
             bool shiny = (rand() % 128) == 0;
             bool lucky = (rand() % 40) == 0;
             bool lucky2 = (rand() % 128) == 0;
@@ -1232,7 +1237,7 @@ namespace poke {
                 // Reroll once if legendary, to make them rarer
                 if (std::find(legendaries.begin(), legendaries.end(), roll) != legendaries.end())
                 {
-                    roll = (rand() % 920) + 1;
+                    roll = (rand() % names.size()) + 1;
                 }
 
                 if (std::find(legendaries.begin(), legendaries.end(), roll) != legendaries.end())
@@ -1270,11 +1275,19 @@ namespace poke {
 
             bool rude = (rand() % 25) == 0;
             if (rude) {
-                int r = rand() % 2;
+                int r = rand() % 5;
                 switch (r) {
                     case 0: name = "silly " + name + " :3"; break;
                     case 1: name = "useless " + name; break;
+                    case 2: name = "rabid " + name; break;
+                    case 3: name = "dangerous " + name; break;
+                    case 4: name = "cute " + name + " 🥺"; break;
                 }
+            }
+
+            int r2 = rand() % 100;
+            if (r2 == 69) {
+                name = name + " <@1358820864128450671> HELP HELP HEEEEEEEEEEEEEELP ME HELP";
             }
 
             if (!isMultiwishing) {
