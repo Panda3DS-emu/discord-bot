@@ -1452,7 +1452,7 @@ namespace poke {
 
         if (users[id].pokemon.size() > 0) {
             bool shiny = users[id].pokemon[0][SHINY] == "true";
-            embed.set_thumbnail("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + users[id].pokemon[0][ID] + ".gif");
+            embed.set_thumbnail("https://raw.githubusercontent.com/KostaSaizo7/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + users[id].pokemon[0][ID] + ".gif");
         }
 
         std::string description = "";
