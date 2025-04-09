@@ -14,7 +14,7 @@ int totalLosses = 0;
 namespace poke {
 
     std::vector<std::string> names = {
-        "BIG DUMMY",
+        "missingno",
         "bulbasaur", 
         "ivysaur", 
         "venusaur", 
@@ -1358,6 +1358,10 @@ namespace poke {
                 shiny = (rand() % 2) == 0;
             }
             
+            if ((rand() % 4096) == 69) {
+                roll = 0;
+            }
+
             std::string url = "https://raw.githubusercontent.com/KostaSaizo7/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + std::to_string(roll) + ".gif";
             dpp::embed embed = dpp::embed()
                 .set_image(url);
@@ -1387,7 +1391,7 @@ namespace poke {
 
             int r2 = rand() % 100;
             if (r2 == 69) {
-                name = name + " <@1358820864128450671> HELP HELP HEEEEEEEEEEEEEELP ME HELP";
+                name = name + " <@540912691888259133> HELP HELP HEEEEEEEEEEEEEELP ME HELP";
             }
 
             if (!isMultiwishing) {
