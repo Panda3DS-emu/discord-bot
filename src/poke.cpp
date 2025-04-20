@@ -1357,10 +1357,6 @@ namespace poke {
                 legendary = true;
                 shiny = (rand() % 2) == 0;
             }
-            
-            if ((rand() % 4096) == 69) {
-                roll = 0;
-            }
 
             std::string url = "https://raw.githubusercontent.com/KostaSaizo7/sprites/master/sprites/pokemon/other/showdown/" + std::string(shiny ? "shiny/" : "") + std::to_string(roll) + ".gif";
             dpp::embed embed = dpp::embed()
