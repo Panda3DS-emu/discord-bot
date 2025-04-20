@@ -1317,8 +1317,8 @@ namespace poke {
             timeUntil = diff % (86400 / 4);
             event.reply("You have no wishes left. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
         } else {
-            int roll1 = (rand() % names.size()) + 1;
-            int roll2 = (rand() % names.size()) + 1;
+            int roll1 = (rand() % names.size());
+            int roll2 = (rand() % names.size());
             bool shiny = (rand() % 128) == 0;
             bool lucky = (rand() % 40) == 0;
             bool lucky2 = (rand() % 128) == 0;
@@ -1337,7 +1337,7 @@ namespace poke {
                 // Reroll once if legendary, to make them rarer
                 if (std::find(legendaries.begin(), legendaries.end(), roll) != legendaries.end())
                 {
-                    roll = (rand() % names.size()) + 1;
+                    roll = (rand() % names.size());
                 }
 
                 if (std::find(legendaries.begin(), legendaries.end(), roll) != legendaries.end())
