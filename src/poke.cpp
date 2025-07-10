@@ -1224,10 +1224,10 @@ namespace poke {
 
             if (diff >= interval)
             {
-                int newWishes = (diff / interval) * 5;
-                if (newWishes > 30)
+                int newWishes = (diff / interval) * 50;
+                if (newWishes > 300)
                 {
-                    newWishes = 30;
+                    newWishes = 300;
                 }
 
                 users[std::stoull(id)].wishes += newWishes;
@@ -1264,7 +1264,7 @@ namespace poke {
 
     void Daily(const dpp::slashcommand_t& event)
     {
-        event.reply("/daily has been replaced with an automatic claiming system. Every 6 hours five wishes are added to your account, up to 30 wishes since your last interaction with the bot. You can check your wishes with /wishes.");
+        event.reply("/daily has been replaced with an automatic claiming system. Every 6 hours fifty wishes are added to your account, up to 300 wishes since your last interaction with the bot. You can check your wishes with /wishes.");
         // std::lock_guard<std::mutex> lock(mtx);
         // uint64_t id = event.command.get_issuing_user().id;
         // CheckAndCreateUser(id);
@@ -1298,7 +1298,7 @@ namespace poke {
         CheckAndCreateUser(id);
 
         int wishes = users[id].wishes;
-        event.reply("You have " + std::to_string(wishes) + " wishes. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
+        event.reply("You have " + std::to_string(wishes) + " wishes. You get 50 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
     }
 
     void Wish(const dpp::slashcommand_t& event, bool isMultiwishing)
@@ -1315,7 +1315,7 @@ namespace poke {
             time_t timeUntil;
             auto diff = time(nullptr) - users[id].daily;
             timeUntil = diff % (86400 / 4);
-            event.reply("You have no wishes left. You get 5 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
+            event.reply("You have no wishes left. You get 50 more wishes <t:" + std::to_string(users[id].daily + 86400 / 4) + ":R>.");
         } else {
             int roll1 = (rand() % names.size());
             int roll2 = (rand() % names.size());
@@ -1450,20 +1450,20 @@ namespace poke {
                 if (leaderboard[0].first != id) {
                     if (lucky)
                     {
-                        footer += "Today is your lucky day! At a 2.5% chance you got 5 free wishes!\n";
-                        users[id].wishes += 5;
+                        footer += "Today is your lucky day! At a 2.5% chance you got 50 free wishes!\n";
+                        users[id].wishes += 50;
                     }
 
                     if (luckier)
                     {
-                        footer += "Today is your lucky day! At a 0.4% chance you got 20 free wishes!\n";
-                        users[id].wishes += 20;
+                        footer += "Today is your lucky day! At a 0.4% chance you got 200 free wishes!\n";
+                        users[id].wishes += 200;
                     }
 
                     if (luckiest)
                     {
-                        footer += "HOLY MOLY! Today is your luckiest day! At a 0.1% chance you got 50 free wishes!\n";
-                        users[id].wishes += 50;
+                        footer += "HOLY MOLY! Today is your luckiest day! At a 0.1% chance you got 500 free wishes!\n";
+                        users[id].wishes += 500;
                     }
 
                     if (lucky2) {
