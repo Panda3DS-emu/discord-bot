@@ -109,10 +109,10 @@ namespace artificial {
         std::thread t([event, prompt] {
             try {
                 uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-                if (timestamp - lastQuestionTimestamp < 1) {
-                    event.reply(dpp::message("You can only ask a question every 1 second, or else Paris is going to go bankrupt."));
-                    return;
-                }
+                // if (timestamp - lastQuestionTimestamp < 1) {
+                //     event.reply(dpp::message("You can only ask a question every 1 second, or else Paris is going to go bankrupt."));
+                //     return;
+                // }
                 lastQuestionTimestamp = timestamp;
 
                 srand(time(0));
