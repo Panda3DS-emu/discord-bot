@@ -1516,7 +1516,7 @@ namespace poke {
         int requestedWishes = std::get<int64_t>(event.get_parameter("wishes"));
 
         if (requestedWishes > 200) {
-            event.reply("SLOW DOWN that's too many wishes. Only request up to 200 at a time.");
+            event.edit_original_response(std::string("SLOW DOWN that's too many wishes. Only request up to 200 at a time."));
             return;
         }
 
