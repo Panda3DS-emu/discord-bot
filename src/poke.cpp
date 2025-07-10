@@ -1319,11 +1319,11 @@ namespace poke {
         } else {
             int roll1 = (rand() % names.size());
             int roll2 = (rand() % names.size());
-            bool shiny = (rand() % 128) == 0;
-            bool lucky = (rand() % 40) == 0;
-            bool lucky2 = (rand() % 128) == 0;
-            bool luckier = (rand() % 256) == 0;
-            bool luckiest = (rand() % 1024) == 0;
+            bool shiny = (rand() % 90) == 0;
+            bool lucky = (rand() % 80) == 0;
+            bool lucky2 = (rand() % 80) == 0;
+            bool luckier = (rand() % 1024) == 0;
+            bool luckiest = (rand() % 2048) == 0;
             bool legendary = false;
             int roll;
 
@@ -1387,7 +1387,7 @@ namespace poke {
 
             int r2 = rand() % 100;
             if (r2 == 69) {
-                name = name + " <@540912691888259133> HELP HELP HEEEEEEEEEEEEEELP ME HELP";
+                name = name + " wheremyfoodat if you see this I love you";
             }
 
             if (!isMultiwishing) {
@@ -1450,24 +1450,29 @@ namespace poke {
                 if (leaderboard[0].first != id) {
                     if (lucky)
                     {
-                        footer += "Today is your lucky day! At a 2.5% chance you got 50 free wishes!\n";
-                        users[id].wishes += 50;
+                        footer += "Today is your lucky day! At a rare chance you got 50 free wishes!\n";
+                        users[id].wishes += 40;
                     }
 
                     if (luckier)
                     {
-                        footer += "Today is your lucky day! At a 0.4% chance you got 200 free wishes!\n";
+                        footer += "Today is your lucky day! At a rarer chance you got 200 free wishes!\n";
                         users[id].wishes += 200;
                     }
 
                     if (luckiest)
                     {
-                        footer += "HOLY MOLY! Today is your luckiest day! At a 0.1% chance you got 500 free wishes!\n";
+                        footer += "HOLY MOLY! Today is your luckiest day! At a rarest chance you got 500 free wishes!\n";
                         users[id].wishes += 500;
                     }
 
+		    if ((rand() % 12345) == 69) {
+                        footer += "TODAY IS YOUR UNLUCKIEST DAY! I'm removing 1 wish. Just kidding I'll give you 1000.\n";
+                        users[id].wishes += 1000;
+		    }
+
                     if (lucky2) {
-                        footer += "Hold on a second... this pokemon is holding a lucky charm... your next roll is going to be legendary and have a 50% chance of being shiny...\n";
+                        footer += "Hold on a second... this person is holding a lucky charm... your next roll is going to be legendary and have a 50% chance of being shiny...\n";
                         users[id].nextLegendary = true;
                     }
                 }
@@ -1510,6 +1515,11 @@ namespace poke {
 
         int requestedWishes = std::get<int64_t>(event.get_parameter("wishes"));
 
+        if (requestedWishes > 200) {
+            event.reply("SLOW DOWN that's too many wishes. Only request up to 200 at a time.");
+            return;
+        }
+
         if (requestedWishes > wishes) {
             event.edit_original_response(std::string("You don't have enough wishes. For trying to cheat the system I ate your favorite pokemon: ") + names[std::stoull(users[id].pokemon[0][ID])] + ". That's right I ate it.");
             return;
@@ -1540,7 +1550,7 @@ namespace poke {
 
     dpp::message ListPage(int page, uint64_t channel_id, uint64_t id) {
         dpp::embed embed = dpp::embed()
-            .set_title("You have " + std::to_string(users[id].pokemon.size()) + " Pokemon.")
+            .set_title("You have " + std::to_string(users[id].pokemon.size()) + " people.")
             .set_color(0x00FF00);
 
         if (users[id].pokemon.size() > 0) {
