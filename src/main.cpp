@@ -336,7 +336,12 @@ int main() {
         if (event.msg.mentions.size() == 1 && event.msg.mentions[0].first.id == bot.me.id) {
             artificial::AskQuestion(event, event.msg.author.global_name + ": " + event.msg.content);
         } else {
-            macros::CheckForMacro(event);
+            bool macroed = macros::CheckForMacro(event);
+            if (!macroed) {
+                if ((rand() % 6) == 1) {
+                    artificial::AskQuestion(event, event.msg.author.global_name + ": " + event.msg.content);
+                }
+            }
         }
     });
     

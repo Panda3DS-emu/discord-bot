@@ -54,7 +54,7 @@ namespace macros {
         return true;
     }
 
-    void CheckForMacro(const dpp::message_create_t& event) {
+    bool CheckForMacro(const dpp::message_create_t& event) {
         std::string message = event.msg.content;
         auto id = event.msg.message_reference.message_id;
         if (macros.find(message) != macros.end()) {
@@ -76,7 +76,7 @@ namespace macros {
                 } else {
                     event.reply(msg);
                 }
-                return;
+                return true;
             }
 
             // Normal message macro
@@ -89,7 +89,9 @@ namespace macros {
             } else {
                 event.reply(msg);
             }
+            return true;
         }
+        return false;
     }
 
     void ClearCache() {
