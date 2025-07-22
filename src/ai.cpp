@@ -81,7 +81,7 @@ namespace artificial {
             convo.SetSystemData("You are about to be given an image generation query. Respond with a single 'yes' and nothing else (without the quotes, just 3 letters) if it would be acceptable and OK to generate such an image. Respond with No and a reasoning if its not acceptable. This is for a safe for work wholesome server.");
             convo.AddUserData("Prompt: " + prompt);
             liboai::Response response = oai.ChatCompletion->create(
-                "gpt-4o-mini", convoFunny
+                "gpt-4o-mini", convo
             );
             convo.Update(response);
             std::string res = convo.GetLastResponse();
