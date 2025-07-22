@@ -17,6 +17,10 @@ std::mutex mutex;
 int lazyResetPromptCounter = 0;
 std::string nonFunnyPrompt, originalPrompt;
 
+float random_float(float min, float max) {
+	return ((float)rand() / RAND_MAX) * (max - min) + min;
+}
+
 namespace artificial {
     
     void Initialize() {
@@ -67,8 +71,27 @@ namespace artificial {
         }
 
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        if (timestamp - lastImageTimestamp < 1200) {
+        if (timestamp - lastImageTimestamp < 3000) {
             event.reply(dpp::message("You can only generate an image every 20 minutes, or else Paris is going to go bankrupt. Next image available <t:" + std::to_string(lastImageTimestamp + 1200) + ":R>"));
+            return;
+        }
+
+        try {
+            liboai::Conversation convo;
+            convo.SetSystemData("You are about to be given an image generation query. Respond with a single 'yes' and nothing else (without the quotes, just 3 letters) if it would be acceptable and OK to generate such an image. Respond with No and a reasoning if its not acceptable. This is for a safe for work wholesome server.");
+            convo.AddUserData("Prompt: " + prompt);
+            liboai::Response response = oai.ChatCompletion->create(
+                "gpt-4o-mini", convoFunny
+            );
+            std::string res = convo.GetLastResponse();
+            if (res == "yes") {
+                // Carry on
+            } else {
+                event.reply(dpp::message("The AI has rejected your prompt. The reason it gave: " + res));
+                return;
+            }
+        } catch (...) {
+            event.reply("The AI crashed while checking if this prompt is acceptable");
             return;
         }
 
@@ -79,13 +102,13 @@ namespace artificial {
                     liboai::Response res = oai.Image->create(
                         prompt,
                         1,
-                        "256x256"
+                        "256x512"
                     );
 
                     std::string url = res["data"][0]["url"];
                     dpp::embed embed = dpp::embed()
                         .set_image(url)
-                        .set_title("Your artificial panda is ready!");
+                        .set_title("This costed Paris: " + std::to_string(random_float(0.00005, 0.005)) + " euros");
                     event.edit_original_response(dpp::message(event.command.channel_id, embed));
                 } catch (std::exception& e) {
                     printf("Exception: %s\n", e.what());
