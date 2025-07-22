@@ -103,7 +103,7 @@ namespace artificial {
                     liboai::Response res = oai.Image->create(
                         prompt,
                         1,
-                        "256x512"
+                        "512x512"
                     );
 
                     std::string url = res["data"][0]["url"];
