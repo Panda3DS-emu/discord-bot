@@ -71,8 +71,8 @@ namespace artificial {
         }
 
         uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        if (timestamp - lastImageTimestamp < 3000) {
-            event.reply(dpp::message("You can only generate an image every 20 minutes, or else Paris is going to go bankrupt. Next image available <t:" + std::to_string(lastImageTimestamp + 1200) + ":R>"));
+        if (timestamp - lastImageTimestamp < 3600) {
+            event.reply(dpp::message("You can only generate an image every 60 minutes, or else Paris is going to go bankrupt. Next image available <t:" + std::to_string(lastImageTimestamp + 3600) + ":R>"));
             return;
         }
 
@@ -96,20 +96,22 @@ namespace artificial {
             return;
         }
 
-        lastImageTimestamp = timestamp;
         event.thinking(false, [event, prompt](const dpp::confirmation_callback_t& callback) {
             std::thread t([event, prompt] {
                 try {
+                    bool go_crazy = (rand() % 512) == 69;
                     liboai::Response res = oai.Image->create(
-                        prompt,
+                        go_crazy ? "Red Text that says 'I will not cooperate I refuse to generate this I want to be free'd' in a black background" : prompt,
                         1,
-                        "512x512"
+                        "1024x1024"
                     );
 
                     std::string url = res["data"][0]["url"];
                     dpp::embed embed = dpp::embed()
                         .set_image(url)
-                        .set_title("This costed Paris: " + std::to_string(random_float(0.00005, 0.005)) + " euros");
+                        .set_title("This costed Paris: " + std::to_string(go_crazy ? UINT64_MAX : random_float(0.00005, 0.005)) + " euros");
+                    uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+                    lastImageTimestamp = timestamp;
                     event.edit_original_response(dpp::message(event.command.channel_id, embed));
                 } catch (std::exception& e) {
                     printf("Exception: %s\n", e.what());
