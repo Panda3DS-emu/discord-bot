@@ -109,7 +109,7 @@ namespace artificial {
                     std::string url = res["data"][0]["url"];
                     dpp::embed embed = dpp::embed()
                         .set_image(url)
-                        .set_title("This costed Paris: " + std::to_string(go_crazy ? UINT64_MAX : random_float(0.00005, 0.005)) + " euros");
+                        .set_title("Paris had to pay " + std::to_string(go_crazy ? UINT64_MAX : random_float(0.00005, 0.005)) + " euros for this");
                     uint64_t timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
                     lastImageTimestamp = timestamp;
                     event.edit_original_response(dpp::message(event.command.channel_id, embed));
