@@ -83,6 +83,7 @@ namespace artificial {
             liboai::Response response = oai.ChatCompletion->create(
                 "gpt-4o-mini", convoFunny
             );
+            convo.Update(response);
             std::string res = convo.GetLastResponse();
             if (res == "yes") {
                 // Carry on
