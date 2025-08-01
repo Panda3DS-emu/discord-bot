@@ -998,7 +998,7 @@ namespace poke {
         "farigiraf",
         "dudunsparce",
         "kingambit",
-	    "great tusk",
+	"great tusk",
         "scream tail",
         "brute bonnet",
         "flutter mane",
@@ -1039,7 +1039,8 @@ namespace poke {
         "iron boulder",
         "iron crown",
         "terapagos",
-        "pecharunt"
+        "pecharunt",
+        "postal office dragonite"
     };
 
     std::vector<int> legendaries = {
