@@ -1040,7 +1040,7 @@ namespace poke {
         "iron crown",
         "terapagos",
         "pecharunt",
-        "postal office dragonite"
+        "browt"
     };
 
     std::vector<int> legendaries = {
